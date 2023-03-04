@@ -15,5 +15,5 @@ steps:
 - name: Compile and run tests on robot code
   run: ./gradlew build
 
--name: Check code formatting with Spotless
- run: ./gradlew spotlessCheck
+- name: Check code formatting with Spotless
+  run: ./gradlew spotlessCheck
