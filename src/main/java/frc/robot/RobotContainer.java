@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -11,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.EndEffector;
 import frc.robot.subsystems.ExampleSubsystem;
 
@@ -24,15 +26,24 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final EndEffector m_endEffector = new EndEffector();
+  private final Drivetrain m_drivetrain = new Drivetrain();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final Joystick m_driverStick = new Joystick(OperatorConstants.JOYSTICK_PORT);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
+    m_drivetrain.setDefaultCommand(
+        new RunCommand(
+            () ->
+                m_drivetrain.arcadeDrive(
+                    m_driverStick.getRawAxis(OperatorConstants.JOYSTICK_Y_AXIS),
+                    m_driverStick.getRawAxis(OperatorConstants.JOYSTICK_X_AXIS)),
+            m_drivetrain));
   }
 
   /**

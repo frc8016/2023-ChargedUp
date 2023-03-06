@@ -15,6 +15,9 @@ package frc.robot;
 public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
+    public static final int JOYSTICK_PORT = 1;
+    public static final int JOYSTICK_Y_AXIS = 1;
+    public static final int JOYSTICK_X_AXIS = 0;
   }
 
   public static class EndEffectorConstants {
@@ -24,5 +27,12 @@ public final class Constants {
     public static final int SOLENOID_REVERSE_CHANNEL = 1;
 
     public static final double INTAKE_SPEED = .1;
+  }
+
+  public static class DrivetrainConstants {
+    public static final int FRONT_LEFT_MOTOR_ID = 1;
+    public static final int BACK_LEFT_MOTOR_ID = 2;
+    public static final int FRONT_RIGHT_MOTOR_ID = 3;
+    public static final int BACK_RIGHT_MOTOR_ID = 4;
   }
 }
