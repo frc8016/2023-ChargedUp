@@ -16,4 +16,13 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+
+  public static class EndEffectorConstants {
+    public static final int INTAKE_ANALOG_PORT = 0;
+
+    public static final int SOLENOID_FORWARD_CHANNEL = 0;
+    public static final int SOLENOID_REVERSE_CHANNEL = 1;
+
+    public static final double INTAKE_SPEED = .1;
+  }
 }
