@@ -35,4 +35,27 @@ public final class Constants {
     public static final int FRONT_RIGHT_MOTOR_ID = 3;
     public static final int BACK_RIGHT_MOTOR_ID = 4;
   }
+
+  public static class ArmConstants {
+    public static final int RELATIVE_ENCODER_A = 1;
+    public static final int RELATIVE_ENCODER_B = 0;
+    public static final int ABSOLUTE_ENCODER_PORT = 1;
+
+    public static final int LEFT_SHOULDER_MOTOR_ID = 10;
+    public static final int RIGHT_SHOULDER_MOTOR_ID = 11;
+
+    public static final double ks = 0;
+    public static final double kg = 0;
+    public static final double kv = 0;
+    public static final double ka = 0;
+
+    public static final double kp = 0;
+    public static final double ki = 0;
+    public static final double kd = 0;
+
+    public static final double kMaxVelocityRadPerSecond = 0;
+    public static final double kMaxAccelerationRadPerSecondSquared = 0;
+    public static final double kArmOffsetRadians = 0;
+    public static final double kRelativeEncoderRadiansPerPulse = 2 * Math.PI / 4096;
+  }
 }
