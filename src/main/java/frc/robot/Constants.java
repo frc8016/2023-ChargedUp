@@ -37,12 +37,14 @@ public final class Constants {
   }
 
   public static class ArmConstants {
-    public static final int RELATIVE_ENCODER_A = 1;
-    public static final int RELATIVE_ENCODER_B = 0;
+    public static final int RELATIVE_ENCODER_A = 9;
+    public static final int RELATIVE_ENCODER_B = 8;
     public static final int ABSOLUTE_ENCODER_PORT = 1;
 
-    public static final int LEFT_SHOULDER_MOTOR_ID = 10;
-    public static final int RIGHT_SHOULDER_MOTOR_ID = 11;
+    public static final int LEFT_SHOULDER_MOTOR_ID = 6;
+    public static final int RIGHT_SHOULDER_MOTOR_ID = 5;
+
+    public static final double GOAL = Math.PI / 4;
 
     public static final double ks = 0;
     public static final double kg = 0;
@@ -55,7 +57,11 @@ public final class Constants {
 
     public static final double kMaxVelocityRadPerSecond = 0;
     public static final double kMaxAccelerationRadPerSecondSquared = 0;
+
+    // The below value must be changed to - Math.PI/2, since the arm rests 90 degrees from
+    // horizontal; per
+    // https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/math/controller/ArmFeedforward.html
     public static final double kArmOffsetRadians = 0;
-    public static final double kRelativeEncoderRadiansPerPulse = 2 * Math.PI / 4096;
+    public static final double kRelativeEncoderRadiansPerPulse = 2 * Math.PI / 1024;
   }
 }

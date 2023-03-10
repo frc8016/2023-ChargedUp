@@ -6,12 +6,15 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.EndEffector;
 import frc.robot.subsystems.ExampleSubsystem;
@@ -27,6 +30,7 @@ public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final EndEffector m_endEffector = new EndEffector();
   private final Drivetrain m_drivetrain = new Drivetrain();
+  private final Arm m_arm = new Arm();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -56,7 +60,18 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+    // Arm Button Mappings
+    m_driverController
+        .rightBumper()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  m_arm.setGoal(ArmConstants.GOAL);
+                  m_arm.enable();
+                },
+                m_arm));
 
+    // End Effector button mappings
     m_driverController
         .b()
         .whileTrue(
