@@ -8,9 +8,19 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.simulation.EncoderSim;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import frc.robot.Constants.ArmConstants;
 
@@ -26,6 +36,26 @@ public class Arm extends ProfiledPIDSubsystem {
 
   private final ArmFeedforward m_armFeedforward =
       new ArmFeedforward(ArmConstants.ks, ArmConstants.kg, ArmConstants.kv, ArmConstants.ka);
+
+  // Simulation classes
+  private final SingleJointedArmSim m_armSim =
+      new SingleJointedArmSim(
+          DCMotor.getNEO(2), 160.0, 4.682, 1.016, ArmConstants.kArmOffsetRadians, 0.0, true);
+  private final EncoderSim m_relativeEncoderSim = new EncoderSim(m_relativeEncoder);
+
+  // Create arm SmartDashboard visualization
+  private final Mechanism2d m_mech2d = new Mechanism2d(60, 60);
+  private final MechanismRoot2d m_armPivot = m_mech2d.getRoot("ArmPivot", 30, 30);
+  private final MechanismLigament2d m_armTower =
+      m_armPivot.append(new MechanismLigament2d("ArmTower", 30, -90));
+  private final MechanismLigament2d m_arm =
+      m_armPivot.append(
+          new MechanismLigament2d(
+              "Arm",
+              30,
+              Units.radiansToDegrees(m_armSim.getAngleRads()),
+              6,
+              new Color8Bit(Color.kYellow)));
 
   /** Creates a new Arm. */
   public Arm() {
@@ -53,5 +83,13 @@ public class Arm extends ProfiledPIDSubsystem {
   @Override
   public double getMeasurement() {
     return m_relativeEncoder.getDistance() + ArmConstants.kArmOffsetRadians;
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    m_armSim.setInputVoltage(m_leftShoulderMotor.get() * RobotController.getInputVoltage());
+    m_armSim.update(0.020);
+    m_relativeEncoderSim.setDistance(m_armSim.getAngleRads());
+    m_arm.setAngle(Units.radiansToDegrees(m_armSim.getAngleRads()));
   }
 }

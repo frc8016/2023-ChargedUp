@@ -12,6 +12,9 @@ package frc.robot;
  * <p>It is advised to statically import this class (or one of its inner classes) wherever the
  * constants are needed, to reduce verbosity.
  */
+
+// Please note that all meters, unless otherwise specified, will be used for ALL distance
+// measurements. Kilograms, unless otherwise specified, will be used for ALL mass measurements.
 public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
@@ -61,7 +64,7 @@ public final class Constants {
     // The below value must be changed to - Math.PI/2, since the arm rests 90 degrees from
     // horizontal; per
     // https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/math/controller/ArmFeedforward.html
-    public static final double kArmOffsetRadians = 0;
+    public static final double kArmOffsetRadians = 0.0;
     public static final double kRelativeEncoderRadiansPerPulse = 2 * Math.PI / 1024;
   }
 }
