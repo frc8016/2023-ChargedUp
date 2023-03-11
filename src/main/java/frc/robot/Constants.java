@@ -47,24 +47,24 @@ public final class Constants {
     public static final int LEFT_SHOULDER_MOTOR_ID = 6;
     public static final int RIGHT_SHOULDER_MOTOR_ID = 5;
 
-    public static final double GOAL = Math.PI / 4;
+    public static final double GOAL = -Math.PI / 4;
 
-    public static final double ks = 0;
-    public static final double kg = 0;
-    public static final double kv = 0;
-    public static final double ka = 0;
+    public static final double ks = 0.20394;
+    public static final double kg = 0.44787;
+    public static final double kv = 2.1809;
+    public static final double ka = 0.38427;
 
     public static final double kp = 0;
     public static final double ki = 0;
     public static final double kd = 0;
 
-    public static final double kMaxVelocityRadPerSecond = 0;
-    public static final double kMaxAccelerationRadPerSecondSquared = 0;
+    public static final double kMaxVelocityRadPerSecond = Math.PI / 2;
+    public static final double kMaxAccelerationRadPerSecondSquared = 2.36;
 
     // The below value must be changed to - Math.PI/2, since the arm rests 90 degrees from
     // horizontal; per
     // https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/math/controller/ArmFeedforward.html
-    public static final double kArmOffsetRadians = 0.0;
+    public static final double kArmOffsetRadians = -Math.PI / 2;
     public static final double kRelativeEncoderRadiansPerPulse = 2 * Math.PI / 1024;
   }
 }
