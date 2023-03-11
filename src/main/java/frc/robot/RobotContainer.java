@@ -69,7 +69,7 @@ public class RobotContainer {
             Commands.runOnce(
                 () -> {
                   System.out.println("running command");
-                  m_arm.setGoal(ArmConstants.GOAL);
+                  m_arm.setGoal(ArmConstants.ArmPosition.kConeLevel2.value);
                   m_arm.enable();
                 },
                 m_arm));
