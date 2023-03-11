@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
@@ -22,7 +23,7 @@ import frc.robot.subsystems.ExampleSubsystem;
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * periodic methods (other than the sche uler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
@@ -36,6 +37,7 @@ public class RobotContainer {
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final Joystick m_driverStick = new Joystick(OperatorConstants.JOYSTICK_PORT);
+  private final CommandGenericHID m_hid = new CommandGenericHID(2);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -61,15 +63,19 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Arm Button Mappings
-    m_driverController
-        .rightBumper()
+    m_hid
+        .button(1)
         .onTrue(
             Commands.runOnce(
                 () -> {
+                  System.out.println("running command");
                   m_arm.setGoal(ArmConstants.GOAL);
                   m_arm.enable();
                 },
                 m_arm));
+    m_hid.button(3).onTrue(Commands.runOnce(() -> m_arm.disable(), m_arm));
+
+    m_hid.button(2).whileTrue(new StartEndCommand(() -> m_arm.set(.1), () -> m_arm.set(0), m_arm));
 
     // End Effector button mappings
     m_driverController

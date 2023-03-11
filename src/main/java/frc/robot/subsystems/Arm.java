@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
@@ -67,10 +68,18 @@ public class Arm extends ProfiledPIDSubsystem {
             ArmConstants.kd,
             new TrapezoidProfile.Constraints(
                 ArmConstants.kMaxVelocityRadPerSecond,
-                ArmConstants.kMaxAccelerationRadPerSecondSquared),
-            ArmConstants.kArmOffsetRadians));
+                ArmConstants.kMaxAccelerationRadPerSecondSquared)),
+        ArmConstants.kArmOffsetRadians);
     m_relativeEncoder.setDistancePerPulse(ArmConstants.kRelativeEncoderRadiansPerPulse);
     setGoal(ArmConstants.kArmOffsetRadians);
+
+    SmartDashboard.putData("Arm Sim", m_mech2d);
+    m_armTower.setColor(new Color8Bit(Color.kBlue));
+  }
+
+  public void set(double speed) {
+    m_leftShoulderMotor.set(speed);
+    m_rightShoulderMotor.follow(m_leftShoulderMotor, true);
   }
 
   @Override
@@ -78,6 +87,14 @@ public class Arm extends ProfiledPIDSubsystem {
     double feedforward = m_armFeedforward.calculate(setpoint.position, setpoint.velocity);
     m_leftShoulderMotor.setVoltage(output + feedforward);
     m_rightShoulderMotor.follow(m_leftShoulderMotor, true);
+    System.out.println(
+        "Motor input: "
+            + output
+            + feedforward
+            + "   "
+            + m_armSim.getAngleRads()
+            + " computed output: "
+            + m_leftShoulderMotor.get());
   }
 
   @Override
@@ -88,6 +105,8 @@ public class Arm extends ProfiledPIDSubsystem {
   @Override
   public void simulationPeriodic() {
     m_armSim.setInputVoltage(m_leftShoulderMotor.get() * RobotController.getInputVoltage());
+    System.out.println(
+        " motor output " + m_leftShoulderMotor.get() * RobotController.getInputVoltage());
     m_armSim.update(0.020);
     m_relativeEncoderSim.setDistance(m_armSim.getAngleRads());
     m_arm.setAngle(Units.radiansToDegrees(m_armSim.getAngleRads()));
