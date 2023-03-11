@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
@@ -37,7 +36,6 @@ public class RobotContainer {
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final Joystick m_driverStick = new Joystick(OperatorConstants.JOYSTICK_PORT);
-  private final CommandGenericHID m_hid = new CommandGenericHID(2);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -63,23 +61,30 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Arm Button Mappings
-    m_hid
-        .button(1)
+    m_driverController
+        .a()
         .onTrue(
             Commands.runOnce(
                 () -> {
-                  System.out.println("running command");
+                  m_arm.setGoal(ArmConstants.ArmPosition.kHybrid.value);
+                  m_arm.enable();
+                },
+                m_arm));
+    m_driverController
+        .x()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
                   m_arm.setGoal(ArmConstants.ArmPosition.kConeLevel2.value);
                   m_arm.enable();
                 },
                 m_arm));
-    m_hid.button(3).onTrue(Commands.runOnce(() -> m_arm.disable(), m_arm));
 
-    m_hid.button(2).whileTrue(new StartEndCommand(() -> m_arm.set(.1), () -> m_arm.set(0), m_arm));
+    m_driverController.b().onTrue(Commands.runOnce(() -> m_arm.disable(), m_arm));
 
     // End Effector button mappings
     m_driverController
-        .b()
+        .leftTrigger()
         .whileTrue(
             new StartEndCommand(
                 () -> m_endEffector.runIntake(Constants.EndEffectorConstants.INTAKE_SPEED),
@@ -87,12 +92,20 @@ public class RobotContainer {
                 m_endEffector));
 
     m_driverController
-        .x()
-        .onTrue(new RunCommand(() -> m_endEffector.extendGripper(), m_endEffector));
+        .rightTrigger()
+        .whileTrue(
+            new StartEndCommand(
+                () -> m_endEffector.runIntake(-Constants.EndEffectorConstants.INTAKE_SPEED),
+                () -> m_endEffector.runIntake(0),
+                m_endEffector));
 
     m_driverController
-        .y()
+        .leftBumper()
         .onTrue(new RunCommand(() -> m_endEffector.retractGripper(), m_endEffector));
+
+    m_driverController
+        .rightBumper()
+        .onTrue(new RunCommand(() -> m_endEffector.extendGripper(), m_endEffector));
   }
 
   /**
