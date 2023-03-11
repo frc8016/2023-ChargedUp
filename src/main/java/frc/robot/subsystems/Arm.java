@@ -38,7 +38,7 @@ public class Arm extends ProfiledPIDSubsystem {
   private final ArmFeedforward m_armFeedforward =
       new ArmFeedforward(ArmConstants.ks, ArmConstants.kg, ArmConstants.kv, ArmConstants.ka);
 
-  // Simulation classes
+  // Simulation classes; simulation is broken for ProfiledPID setGoal().
   private final SingleJointedArmSim m_armSim =
       new SingleJointedArmSim(
           DCMotor.getNEO(2), 160.0, 4.682, 1.016, ArmConstants.kArmOffsetRadians, 0.0, true);
@@ -77,6 +77,7 @@ public class Arm extends ProfiledPIDSubsystem {
     m_armTower.setColor(new Color8Bit(Color.kBlue));
   }
 
+  // Runs with arm with non-predictive feedforward control
   public void set(double speed) {
     m_leftShoulderMotor.set(speed);
     m_rightShoulderMotor.follow(m_leftShoulderMotor, true);
@@ -87,14 +88,6 @@ public class Arm extends ProfiledPIDSubsystem {
     double feedforward = m_armFeedforward.calculate(setpoint.position, setpoint.velocity);
     m_leftShoulderMotor.setVoltage(output + feedforward);
     m_rightShoulderMotor.follow(m_leftShoulderMotor, true);
-    System.out.println(
-        "Motor input: "
-            + output
-            + feedforward
-            + "   "
-            + m_armSim.getAngleRads()
-            + " computed output: "
-            + m_leftShoulderMotor.get());
   }
 
   @Override
@@ -105,8 +98,6 @@ public class Arm extends ProfiledPIDSubsystem {
   @Override
   public void simulationPeriodic() {
     m_armSim.setInputVoltage(m_leftShoulderMotor.get() * RobotController.getInputVoltage());
-    System.out.println(
-        " motor output " + m_leftShoulderMotor.get() * RobotController.getInputVoltage());
     m_armSim.update(0.020);
     m_relativeEncoderSim.setDistance(m_armSim.getAngleRads());
     m_arm.setAngle(Units.radiansToDegrees(m_armSim.getAngleRads()));

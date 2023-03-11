@@ -61,10 +61,26 @@ public final class Constants {
     public static final double kMaxVelocityRadPerSecond = Math.PI / 2;
     public static final double kMaxAccelerationRadPerSecondSquared = 2.36;
 
-    // The below value must be changed to - Math.PI/2, since the arm rests 90 degrees from
+    // kArmOffsetRadians must equal - Math.PI/2, since the arm rests 90 degrees from
     // horizontal; per
     // https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/math/controller/ArmFeedforward.html
     public static final double kArmOffsetRadians = -Math.PI / 2;
+    public static final double kArmLengthMeters = 0.8461756;
+    public static final double kFulcrumHeightFromFloorMeters = 1.016032766;
     public static final double kRelativeEncoderRadiansPerPulse = 2 * Math.PI / 1024;
+
+    enum ArmPosition {
+      kHybrid(kFulcrumHeightFromFloorMeters - kArmLengthMeters + .1),
+      kConeLevel2(.87),
+      kCubeLevel2(.6),
+      kIndex(kFulcrumHeightFromFloorMeters - kArmLengthMeters + .1);
+
+      public final double value;
+
+      // Computes necessary arm angle given distance from floor (in meters)
+      ArmPosition(double value) {
+        this.value = Math.asin((value - kFulcrumHeightFromFloorMeters) / kArmLengthMeters);
+      }
+    }
   }
 }
