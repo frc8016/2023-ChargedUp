@@ -24,7 +24,7 @@ public final class Constants {
   }
 
   public static class EndEffectorConstants {
-    public static final int INTAKE_ANALOG_PORT = 0;
+    public static final int INTAKE_ID = 7;
 
     public static final int SOLENOID_FORWARD_CHANNEL = 0;
     public static final int SOLENOID_REVERSE_CHANNEL = 1;
