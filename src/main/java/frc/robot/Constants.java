@@ -47,8 +47,6 @@ public final class Constants {
     public static final int LEFT_SHOULDER_MOTOR_ID = 6;
     public static final int RIGHT_SHOULDER_MOTOR_ID = 5;
 
-    public static final double GOAL = -Math.PI / 4;
-
     public static final double ks = 0.20394;
     public static final double kg = 0.44787;
     public static final double kv = 2.1809;
