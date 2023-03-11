@@ -4,23 +4,24 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.Constants.EndEffectorConstants;
 
 public class EndEffector extends SubsystemBase {
 
-  private final PWMSparkMax m_intake =
-      new PWMSparkMax(Constants.EndEffectorConstants.INTAKE_ANALOG_PORT);
+  private final CANSparkMax m_intake =
+      new CANSparkMax(EndEffectorConstants.INTAKE_ID, MotorType.kBrushless);
 
   private DoubleSolenoid solenoid =
       new DoubleSolenoid(
           PneumaticsModuleType.CTREPCM,
-          Constants.EndEffectorConstants.SOLENOID_FORWARD_CHANNEL,
-          Constants.EndEffectorConstants.SOLENOID_REVERSE_CHANNEL);
+          EndEffectorConstants.SOLENOID_FORWARD_CHANNEL,
+          EndEffectorConstants.SOLENOID_REVERSE_CHANNEL);
 
   /** Creates a new EndEffector. */
   public EndEffector() {}
