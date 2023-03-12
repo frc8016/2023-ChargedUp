@@ -62,7 +62,7 @@ public class RobotContainer {
   private void configureBindings() {
     // Arm Button Mappings
     m_driverController
-        .a()
+        .x()
         .onTrue(
             Commands.runOnce(
                 () -> {
@@ -71,16 +71,24 @@ public class RobotContainer {
                 },
                 m_arm));
     m_driverController
-        .x()
+        .y()
         .onTrue(
             Commands.runOnce(
                 () -> {
-                  m_arm.setGoal(ArmConstants.ArmPosition.kConeLevel2.value);
+                  m_arm.setGoal(0 + Math.PI / 30);
                   m_arm.enable();
                 },
                 m_arm));
 
-    m_driverController.b().onTrue(Commands.runOnce(() -> m_arm.disable(), m_arm));
+    m_driverController
+        .a()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  m_arm.setGoal(ArmConstants.kArmOffsetRadians + Math.PI / 50);
+                  m_arm.enable();
+                },
+                m_arm));
 
     // End Effector button mappings
     m_driverController
@@ -100,11 +108,11 @@ public class RobotContainer {
                 m_endEffector));
 
     m_driverController
-        .leftBumper()
+        .rightBumper()
         .onTrue(new RunCommand(() -> m_endEffector.retractGripper(), m_endEffector));
 
     m_driverController
-        .rightBumper()
+        .leftBumper()
         .onTrue(new RunCommand(() -> m_endEffector.extendGripper(), m_endEffector));
   }
 
