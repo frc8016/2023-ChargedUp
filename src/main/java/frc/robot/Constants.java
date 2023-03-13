@@ -42,7 +42,7 @@ public final class Constants {
   public static class ArmConstants {
     public static final int RELATIVE_ENCODER_A = 9;
     public static final int RELATIVE_ENCODER_B = 8;
-    public static final int ABSOLUTE_ENCODER_PORT = 1;
+    public static final int ABSOLUTE_ENCODER_PORT = 0;
 
     public static final int LEFT_SHOULDER_MOTOR_ID = 6;
     public static final int RIGHT_SHOULDER_MOTOR_ID = 5;
@@ -62,7 +62,7 @@ public final class Constants {
     // kArmOffsetRadians must equal - Math.PI/2, since the arm rests 90 degrees from
     // horizontal; per
     // https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/math/controller/ArmFeedforward.html
-    public static final double kArmOffsetRadians = -Math.PI / 2;
+    public static final double kArmOffsetRadians = 4.76;
     public static final double kArmLengthMeters = 0.8461756;
     public static final double kFulcrumHeightFromFloorMeters = 1.016032766;
     public static final double kRelativeEncoderRadiansPerPulse = 2 * Math.PI / 1024;

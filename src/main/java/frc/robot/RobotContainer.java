@@ -48,6 +48,12 @@ public class RobotContainer {
                     m_driverStick.getRawAxis(OperatorConstants.JOYSTICK_Y_AXIS),
                     m_driverStick.getRawAxis(OperatorConstants.JOYSTICK_X_AXIS)),
             m_drivetrain));
+
+    //  m_endEffector.setDefaultCommand(
+    //    new RunCommand(() -> m_endEffector.runIntake(-.2), m_endEffector));
+    //
+    m_arm.setDefaultCommand(
+        new RunCommand(() -> System.out.println(m_arm.getMeasurement()), m_arm));
   }
 
   /**
@@ -75,7 +81,7 @@ public class RobotContainer {
         .onTrue(
             Commands.runOnce(
                 () -> {
-                  m_arm.setGoal(0 + Math.PI / 30);
+                  m_arm.setGoal(Math.PI / 24);
                   m_arm.enable();
                 },
                 m_arm));
@@ -85,7 +91,7 @@ public class RobotContainer {
         .onTrue(
             Commands.runOnce(
                 () -> {
-                  m_arm.setGoal(ArmConstants.kArmOffsetRadians + Math.PI / 50);
+                  m_arm.setGoal(-Math.PI / 2 + Math.PI / 30);
                   m_arm.enable();
                 },
                 m_arm));

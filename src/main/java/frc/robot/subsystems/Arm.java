@@ -44,6 +44,8 @@ public class Arm extends ProfiledPIDSubsystem {
           DCMotor.getNEO(2), 160.0, 4.682, 1.016, ArmConstants.kArmOffsetRadians, 0.0, true);
   private final EncoderSim m_relativeEncoderSim = new EncoderSim(m_relativeEncoder);
 
+  private double m_relativeOffsetRadians;
+
   // Create arm SmartDashboard visualization
   private final Mechanism2d m_mech2d = new Mechanism2d(60, 60);
   private final MechanismRoot2d m_armPivot = m_mech2d.getRoot("ArmPivot", 30, 30);
@@ -69,9 +71,15 @@ public class Arm extends ProfiledPIDSubsystem {
             new TrapezoidProfile.Constraints(
                 ArmConstants.kMaxVelocityRadPerSecond,
                 ArmConstants.kMaxAccelerationRadPerSecondSquared)),
-        ArmConstants.kArmOffsetRadians);
+        -Math.PI / 2);
+
+    m_relativeEncoder.reset();
     m_relativeEncoder.setDistancePerPulse(ArmConstants.kRelativeEncoderRadiansPerPulse);
-    setGoal(ArmConstants.kArmOffsetRadians);
+    m_absoluteEncoder.setDistancePerRotation(Math.PI * 2);
+
+    m_relativeOffsetRadians = ArmConstants.kArmOffsetRadians - m_absoluteEncoder.getDistance();
+
+    SmartDashboard.putData("Arm PID", getController());
 
     SmartDashboard.putData("Arm Sim", m_mech2d);
     m_armTower.setColor(new Color8Bit(Color.kBlue));
@@ -83,6 +91,11 @@ public class Arm extends ProfiledPIDSubsystem {
     m_rightShoulderMotor.follow(m_leftShoulderMotor, true);
   }
 
+  // Returns the raw absolute position of the arm; this is needed to find kArmOffsetRadians
+  public double getRawAbsolutePosition() {
+    return m_absoluteEncoder.getDistance();
+  }
+
   @Override
   public void useOutput(double output, TrapezoidProfile.State setpoint) {
     double feedforward = m_armFeedforward.calculate(setpoint.position, setpoint.velocity);
@@ -92,7 +105,7 @@ public class Arm extends ProfiledPIDSubsystem {
 
   @Override
   public double getMeasurement() {
-    return m_relativeEncoder.getDistance() + ArmConstants.kArmOffsetRadians;
+    return m_relativeEncoder.getDistance() + m_relativeOffsetRadians;
   }
 
   @Override
