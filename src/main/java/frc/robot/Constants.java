@@ -52,12 +52,12 @@ public final class Constants {
     public static final double kv = 2.1809;
     public static final double ka = 0.38427;
 
-    public static final double kp = 0;
+    public static final double kp = 4;
     public static final double ki = 0;
     public static final double kd = 0;
 
-    public static final double kMaxVelocityRadPerSecond = Math.PI / 2;
-    public static final double kMaxAccelerationRadPerSecondSquared = 2.36;
+    public static final double kMaxVelocityRadPerSecond = Math.PI / 4;
+    public static final double kMaxAccelerationRadPerSecondSquared = 1;
 
     // kArmOffsetRadians must equal - Math.PI/2, since the arm rests 90 degrees from
     // horizontal; per

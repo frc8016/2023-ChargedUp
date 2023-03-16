@@ -79,8 +79,6 @@ public class Arm extends ProfiledPIDSubsystem {
 
     m_relativeOffsetRadians = ArmConstants.kArmOffsetRadians - m_absoluteEncoder.getDistance();
 
-    SmartDashboard.putData("Arm PID", getController());
-
     SmartDashboard.putData("Arm Sim", m_mech2d);
     m_armTower.setColor(new Color8Bit(Color.kBlue));
   }
@@ -105,6 +103,10 @@ public class Arm extends ProfiledPIDSubsystem {
 
   @Override
   public double getMeasurement() {
+
+    SmartDashboard.putData("Arm PID", getController());
+    SmartDashboard.putNumber(
+        "Arm Position", m_relativeEncoder.getDistance() + m_relativeOffsetRadians);
     return m_relativeEncoder.getDistance() + m_relativeOffsetRadians;
   }
 

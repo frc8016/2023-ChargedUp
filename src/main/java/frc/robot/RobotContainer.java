@@ -76,6 +76,17 @@ public class RobotContainer {
                   m_arm.enable();
                 },
                 m_arm));
+
+    m_driverController
+        .b()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  m_arm.setGoal(.12);
+                  m_arm.enable();
+                },
+                m_arm));
+
     m_driverController
         .y()
         .onTrue(
