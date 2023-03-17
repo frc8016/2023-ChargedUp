@@ -17,25 +17,27 @@ public class EndEffector extends SubsystemBase {
   private final CANSparkMax m_intake =
       new CANSparkMax(EndEffectorConstants.INTAKE_ID, MotorType.kBrushless);
 
-  private DoubleSolenoid solenoid =
+  private DoubleSolenoid m_solenoid =
       new DoubleSolenoid(
           PneumaticsModuleType.CTREPCM,
           EndEffectorConstants.SOLENOID_FORWARD_CHANNEL,
           EndEffectorConstants.SOLENOID_REVERSE_CHANNEL);
 
   /** Creates a new EndEffector. */
-  public EndEffector() {}
+  public EndEffector() {
+    m_solenoid.set(Value.kForward);
+  }
 
   public void runIntake(double speed) {
     m_intake.set(speed);
   }
 
   public void extendGripper() {
-    solenoid.set(Value.kForward);
+    m_solenoid.set(Value.kForward);
   }
 
   public void retractGripper() {
-    solenoid.set(Value.kReverse);
+    m_solenoid.set(Value.kReverse);
   }
 
   @Override
