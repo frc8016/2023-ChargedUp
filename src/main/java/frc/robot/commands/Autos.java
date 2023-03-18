@@ -44,7 +44,10 @@ public final class Autos {
               arm.setGoal(-Math.PI / 2 + Math.PI / 30);
               arm.enable();
             },
-            arm));
+            arm),
+        Commands.runOnce(() -> drivetrain.arcadeDrive(-.5, 0), drivetrain),
+        new WaitCommand(1),
+        Commands.runOnce(() -> drivetrain.arcadeDrive(0, 0)));
   }
 
   private Autos() {
