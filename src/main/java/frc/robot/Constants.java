@@ -27,7 +27,7 @@ public final class Constants {
     public static final double SCORE_DELAY = 2;
     public static final double RAISE_DELAY = 3;
     public static final double LOWER_DELAY = 0;
-    public static final double CUBE_HIGH_TIER_SPEED = .5;
+    public static final double CUBE_HIGH_TIER_SPEED = -1;
   }
 
   public static class EndEffectorConstants {
@@ -77,7 +77,7 @@ public final class Constants {
     // non computed position
 
     public static final double FLOOR_INTAKE_POSE = -Math.PI / 2 + Math.PI / 30;
-    public static final double CUBE_LAUNCH_POSE = 0;
+    public static final double CUBE_LAUNCH_POSE = Math.PI / 24;
 
     enum ArmPosition {
       kHybrid(kFulcrumHeightFromFloorMeters - kArmLengthMeters + .1),

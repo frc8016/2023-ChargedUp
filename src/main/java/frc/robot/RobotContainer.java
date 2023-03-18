@@ -126,11 +126,11 @@ public class RobotContainer {
 
     m_driverController
         .rightBumper()
-        .onTrue(new RunCommand(() -> m_endEffector.retractGripper(), m_endEffector));
+        .onTrue(new RunCommand(() -> m_endEffector.extendGripper(), m_endEffector));
 
     m_driverController
         .leftBumper()
-        .onTrue(new RunCommand(() -> m_endEffector.extendGripper(), m_endEffector));
+        .onTrue(new RunCommand(() -> m_endEffector.retractGripper(), m_endEffector));
   }
 
   /**
