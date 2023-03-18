@@ -23,6 +23,13 @@ public final class Constants {
     public static final int JOYSTICK_X_AXIS = 0;
   }
 
+  public static class AutonConstants {
+    public static final double SCORE_DELAY = 0;
+    public static final double RAISE_DELAY = 0;
+    public static final double LOWER_DELAY = 0;
+    public static final double CUBE_HIGH_TIER_SPEED = 0;
+  }
+
   public static class EndEffectorConstants {
     public static final int INTAKE_ID = 7;
 
@@ -66,6 +73,11 @@ public final class Constants {
     public static final double kArmLengthMeters = 0.8461756;
     public static final double kFulcrumHeightFromFloorMeters = 1.016032766;
     public static final double kRelativeEncoderRadiansPerPulse = 2 * Math.PI / 1024;
+
+    // non computed position
+
+    public static final double FLOOR_INTAKE_POSE = -Math.PI / 2 + Math.PI / 30;
+    public static final double CUBE_LAUNCH_POSE = 0;
 
     enum ArmPosition {
       kHybrid(kFulcrumHeightFromFloorMeters - kArmLengthMeters + .1),
