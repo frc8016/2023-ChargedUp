@@ -24,10 +24,10 @@ public final class Constants {
   }
 
   public static class AutonConstants {
-    public static final double SCORE_DELAY = 0;
-    public static final double RAISE_DELAY = 0;
+    public static final double SCORE_DELAY = 2;
+    public static final double RAISE_DELAY = 3;
     public static final double LOWER_DELAY = 0;
-    public static final double CUBE_HIGH_TIER_SPEED = 0;
+    public static final double CUBE_HIGH_TIER_SPEED = .5;
   }
 
   public static class EndEffectorConstants {
