@@ -86,12 +86,13 @@ public final class Constants {
 
     public static final double FLOOR_INTAKE_POSE = -Math.PI / 2 + Math.PI / 30;
     public static final double CUBE_LAUNCH_POSE = Math.PI / 24;
+    public static final double INDEX_POSE = -Math.PI/2 + Math.PI/6;
 
     enum ArmPosition {
       kHybrid(kFulcrumHeightFromFloorMeters - kArmLengthMeters + .1),
       kConeLevel2(.87),
       kCubeLevel2(.6),
-      kIndex(kFulcrumHeightFromFloorMeters - kArmLengthMeters + .1);
+      kIndex(kFulcrumHeightFromFloorMeters - kArmLengthMeters + .2);
 
       public final double value;
 

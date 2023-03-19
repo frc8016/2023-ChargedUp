@@ -44,8 +44,7 @@ public final class Autos {
               arm.setGoal(-Math.PI / 2 + Math.PI / 30);
               arm.enable();
             },
-            arm),
-        new DriveToDistance(drivetrain));
+            arm));
   }
 
   private Autos() {

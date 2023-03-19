@@ -72,7 +72,7 @@ public class RobotContainer {
         .onTrue(
             Commands.runOnce(
                 () -> {
-                  m_arm.setGoal(ArmConstants.ArmPosition.kHybrid.value);
+                  m_arm.setGoal(ArmConstants.ArmPosition.kIndex.value);
                   m_arm.enable();
                 },
                 m_arm));
@@ -92,7 +92,7 @@ public class RobotContainer {
         .onTrue(
             Commands.runOnce(
                 () -> {
-                  m_arm.setGoal(Math.PI / 24);
+                  m_arm.setGoal(Math.PI / 35);
                   m_arm.enable();
                 },
                 m_arm));
