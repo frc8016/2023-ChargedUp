@@ -27,7 +27,15 @@ public final class Constants {
     public static final double SCORE_DELAY = 2;
     public static final double RAISE_DELAY = 3;
     public static final double LOWER_DELAY = 0;
+
     public static final double CUBE_HIGH_TIER_SPEED = -1;
+    public static final double TAXI_SPEED = .5;
+
+    public static final double TAXI_DISTANCE = 270;
+
+    public static final double kPDrive = 0;
+    public static final double kIDrive = 0;
+    public static final double kDDrive = 0;
   }
 
   public static class EndEffectorConstants {
