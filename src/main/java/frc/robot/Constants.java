@@ -31,7 +31,7 @@ public final class Constants {
     public static final double CUBE_HIGH_TIER_SPEED = -1;
     public static final double TAXI_SPEED = .5;
 
-    public static final double TAXI_DISTANCE = 270;
+    public static final double TAXI_DISTANCE = 130;
 
     public static final double kPDrive = 0;
     public static final double kIDrive = 0;
