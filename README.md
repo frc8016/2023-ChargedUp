@@ -4,23 +4,25 @@
 
 To properly set up your development environment for the 2023 season, you must install VSCode and WPILib extensions (found [here](https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-2/wpilib-setup.html)) and git (found [here](https://git-scm.com/)).
 
-### **Cloning**
+### **Forking**
 
-To clone this git repository, please follow the steps outlined [here](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository).
+To fork this git repository, please follow the steps outlined [here](https://docs.github.com/en/get-started/quickstart/fork-a-repo).
 
-## **Repo overview:**
+## **Repo Overview**
 
-This repository uses an alpha -> stable -> release branch system. The alpha branch is where all new additions are tested. Once proven that the code works at least nominally, and known issues are tracked, it can be pushed to stable. In stable, code can be tuned and bugs fixed, until the code is competition ready. Once that happens, it can be pushed to release. Any code in release should be competition ready.
+The alpha branch contains the development robot source code. After each event, a branch ``competition/<event_name>`` is created from alpha to preserve the software run at the respective event.
 
 ### **Contributing**
 
-You must be a member of FRC team 8016 to contribute. If you're adding a feature or fixing a bug in the alpha branch, create a new branch from alpha. Make your changes there, and then open a pull request back into alpha. If you're fixing bugs or tuning values in stable or release, make a new branch from the branch you're trying to fix, make your changes, and open a pull request back into the branch you're trying to fix. Use clear, concise commit messages as outlined in [this](https://cbea.ms/git-commit/#seven-rules) guide.
-
-When creating a new branch, please name it with a description of what the branch is for.
+You must be a member of FRC team 8016 to contribute. To be added to the 8016 GitHub organization, please contact Carlo. To contribute, fork the repository and make your changes locally. Changes should be submitted as a Pull Request against alpha. Use clear, concise commit messages as outlined in [this](https://cbea.ms/git-commit/#seven-rules) guide.
 
 ## **Code formatting:**
 
-When editing code, please use these formatting conventions:
+This project uses modified Google style guides for all source code, which are enforced by the Spotless autoformatter.
+
+By default, ``./gradlew spotlesscheck`` runs while building the project; generally, any convention or formatting errors reported by Spotless can be resolved by running ``./gradlew spotlessApply`` from the root directory.
+
+Please note the following conventions:
 
 - Classes should be in UpperCamelCase
 - Methods should be in lowerCamelCase
