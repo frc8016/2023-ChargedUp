@@ -45,15 +45,9 @@ public class RobotContainer {
         new RunCommand(
             () ->
                 m_drivetrain.arcadeDrive(
-                    m_driverStick.getRawAxis(OperatorConstants.JOYSTICK_Y_AXIS),
-                    m_driverStick.getRawAxis(OperatorConstants.JOYSTICK_X_AXIS)),
+                    -m_driverStick.getRawAxis(OperatorConstants.JOYSTICK_Y_AXIS),
+                    -m_driverStick.getRawAxis(OperatorConstants.JOYSTICK_X_AXIS)),
             m_drivetrain));
-
-    //  m_endEffector.setDefaultCommand(
-    //    new RunCommand(() -> m_endEffector.runIntake(-.2), m_endEffector));
-    //
-    m_arm.setDefaultCommand(
-        new RunCommand(() -> System.out.println(m_arm.getMeasurement()), m_arm));
   }
 
   /**
@@ -72,7 +66,7 @@ public class RobotContainer {
         .onTrue(
             Commands.runOnce(
                 () -> {
-                  m_arm.setGoal(ArmConstants.ArmPosition.kHybrid.value);
+                  m_arm.setGoal(ArmConstants.ArmPosition.kIndex.value);
                   m_arm.enable();
                 },
                 m_arm));
@@ -92,7 +86,7 @@ public class RobotContainer {
         .onTrue(
             Commands.runOnce(
                 () -> {
-                  m_arm.setGoal(Math.PI / 24);
+                  m_arm.setGoal(Math.PI / 35);
                   m_arm.enable();
                 },
                 m_arm));
@@ -126,11 +120,11 @@ public class RobotContainer {
 
     m_driverController
         .rightBumper()
-        .onTrue(new RunCommand(() -> m_endEffector.retractGripper(), m_endEffector));
+        .onTrue(new RunCommand(() -> m_endEffector.extendGripper(), m_endEffector));
 
     m_driverController
         .leftBumper()
-        .onTrue(new RunCommand(() -> m_endEffector.extendGripper(), m_endEffector));
+        .onTrue(new RunCommand(() -> m_endEffector.retractGripper(), m_endEffector));
   }
 
   /**
@@ -140,6 +134,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Autos.highTierRetreat(m_drivetrain, m_endEffector, m_arm);
+    return Autos.scoreHighTier(m_drivetrain, m_endEffector, m_arm);
   }
 }

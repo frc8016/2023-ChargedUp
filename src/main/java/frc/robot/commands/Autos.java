@@ -20,8 +20,8 @@ public final class Autos {
     return Commands.sequence(subsystem.exampleMethodCommand(), new ExampleCommand(subsystem));
   }
 
-  public static CommandBase highTierRetreat(
-      Drivetrain drivetrain, EndEffector endEffector, Arm arm) {
+  // Score cube on high node
+  public static CommandBase scoreHighTier(Drivetrain drivetrain, EndEffector endEffector, Arm arm) {
     return Commands.sequence(
         // Raise arm to scoring position
         Commands.runOnce(
@@ -44,10 +44,7 @@ public final class Autos {
               arm.setGoal(-Math.PI / 2 + Math.PI / 30);
               arm.enable();
             },
-            arm),
-        Commands.runOnce(() -> drivetrain.arcadeDrive(-.5, 0), drivetrain),
-        new WaitCommand(1),
-        Commands.runOnce(() -> drivetrain.arcadeDrive(0, 0)));
+            arm));
   }
 
   private Autos() {

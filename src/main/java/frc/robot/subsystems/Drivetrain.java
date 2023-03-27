@@ -30,7 +30,6 @@ public class Drivetrain extends SubsystemBase {
   public Drivetrain() {}
 
   public void arcadeDrive(double speed, double rotation) {
-
     m_leftControllerGroup.setInverted(true);
     m_differentialDrive.arcadeDrive(speed, rotation);
   }

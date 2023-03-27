@@ -27,7 +27,15 @@ public final class Constants {
     public static final double SCORE_DELAY = 2;
     public static final double RAISE_DELAY = 3;
     public static final double LOWER_DELAY = 0;
-    public static final double CUBE_HIGH_TIER_SPEED = .5;
+
+    public static final double CUBE_HIGH_TIER_SPEED = -1;
+    public static final double TAXI_SPEED = .5;
+
+    public static final double TAXI_DISTANCE = 130;
+
+    public static final double kPDrive = 0;
+    public static final double kIDrive = 0;
+    public static final double kDDrive = 0;
   }
 
   public static class EndEffectorConstants {
@@ -74,16 +82,17 @@ public final class Constants {
     public static final double kFulcrumHeightFromFloorMeters = 1.016032766;
     public static final double kRelativeEncoderRadiansPerPulse = 2 * Math.PI / 1024;
 
-    // non computed position
+    // non-computed positions; this will be depreciated following softlimits on arm rotation.
 
     public static final double FLOOR_INTAKE_POSE = -Math.PI / 2 + Math.PI / 30;
-    public static final double CUBE_LAUNCH_POSE = 0;
+    public static final double CUBE_LAUNCH_POSE = Math.PI / 24;
+    public static final double INDEX_POSE = -Math.PI / 2 + Math.PI / 6;
 
     enum ArmPosition {
       kHybrid(kFulcrumHeightFromFloorMeters - kArmLengthMeters + .1),
       kConeLevel2(.87),
       kCubeLevel2(.6),
-      kIndex(kFulcrumHeightFromFloorMeters - kArmLengthMeters + .1);
+      kIndex(kFulcrumHeightFromFloorMeters - kArmLengthMeters + .2);
 
       public final double value;
 
