@@ -8,13 +8,18 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.REVLibError;
+import edu.wpi.first.math.controller.DifferentialDriveFeedforward;
+import edu.wpi.first.math.controller.DifferentialDriveWheelVoltages;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
@@ -87,9 +92,23 @@ public class Drivetrain extends SubsystemBase {
   private final Transform3d m_cameraToRobot =
       new Transform3d(new Translation3d(0, 0, 0), new Rotation3d(0, 0, 0));
 
+  // Drivetrain feedforward
+  private final DifferentialDriveFeedforward m_feedforward =
+      new DifferentialDriveFeedforward(
+          DrivetrainConstants.kVLinear,
+          DrivetrainConstants.kALinear,
+          DrivetrainConstants.kVAngular,
+          DrivetrainConstants.kAAngular,
+          DrivetrainConstants.TRACK_WIDTH_METERS);
+
+  // PID Controllers for left and right sides of drivetrain
+  private final PIDController m_leftPID = new PIDController(DrivetrainConstants.kp_left, 0.0, 0.0);
+  private final PIDController m_rightPID =
+      new PIDController(DrivetrainConstants.kp_right, 0.0, 0.0);
+
   /** Creates a new Drivetrain. */
   public Drivetrain() {
-    resetOdometry(new CANCoderConfiguration());
+    resetOdometry();
   }
 
   public void arcadeDrive(double speed, double rotation) {
@@ -97,19 +116,23 @@ public class Drivetrain extends SubsystemBase {
     m_differentialDrive.arcadeDrive(speed, rotation);
   }
 
-  public void resetOdometry(CANCoderConfiguration encoderConfig) {
+  // <TODO> Smart "homing" for odometry which syncs with vision measurements
+  public void resetOdometry() {
     // Configure encoder parameters
+    CANCoderConfiguration encoderConfig = new CANCoderConfiguration();
     encoderConfig.sensorCoefficient = 0.479 / 4096.0;
     encoderConfig.unitString = "Meters";
     encoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
 
     // Flash encoder parameters
+    // <TODO> one encoder must be inverted
     m_leftDriveEncoder.configAllSettings(encoderConfig);
     m_rightDriveEncoder.configAllSettings(encoderConfig);
 
-    // Set encoder positions to 0.0
+    // Set encoder positions and gyro heading to 0
     m_leftDriveEncoder.setPosition(0.0);
     m_rightDriveEncoder.setPosition(0.0);
+    m_pigeon.reset();
   }
 
   public void updateOdometry() {
@@ -140,6 +163,39 @@ public class Drivetrain extends SubsystemBase {
 
     // Apply vision measurements to DifferentialDrivePoseEstimator class
     m_drivePoseEstimator.addVisionMeasurement(visionMeasurement2d, botPose[6]);
+  }
+
+  public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
+    // Compute left and right wheel speeds from ChassisSpeeds object
+    DifferentialDriveWheelSpeeds wheelSpeeds = m_driveKinematics.toWheelSpeeds(chassisSpeeds);
+
+    // Compute left and right wheel voltages from WheelSpeeds object
+    DifferentialDriveWheelVoltages wheelVoltages =
+        m_feedforward.calculate(
+            m_leftDriveEncoder.getVelocity(),
+            wheelSpeeds.leftMetersPerSecond,
+            m_rightDriveEncoder.getVelocity(),
+            wheelSpeeds.rightMetersPerSecond,
+            0.02);
+
+    // Compute left and right drivetrain outputs
+    double leftWheelVoltage =
+        wheelVoltages.left
+            + m_leftPID.calculate(
+                m_leftDriveEncoder.getVelocity(), wheelSpeeds.leftMetersPerSecond);
+    double rightWheelVoltage =
+        wheelVoltages.right
+            + m_rightPID.calculate(
+                m_rightDriveEncoder.getVelocity(), wheelSpeeds.rightMetersPerSecond);
+
+    // Feed outputs into motor controllers
+    m_leftControllerGroup.set(leftWheelVoltage);
+    m_rightControllerGroup.set(rightWheelVoltage);
+  }
+
+  // Retrieve robot pose from DifferentialDrivePoseEstimator
+  public Pose2d getEstimatedPosition() {
+    return m_drivePoseEstimator.getEstimatedPosition();
   }
 
   @Override

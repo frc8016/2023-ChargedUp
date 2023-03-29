@@ -73,6 +73,14 @@ public final class Constants {
         VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
     public static final Matrix<N3, N1> VISION_STD_DEVS =
         VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30));
+
+    public static final double kVLinear = 0;
+    public static final double kVAngular = 0;
+    public static final double kALinear = 0;
+    public static final double kAAngular = 0;
+
+    public static final double kp_left = 0;
+    public static final double kp_right = 0;
   }
 
   public static class ArmConstants {
