@@ -4,6 +4,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -56,6 +62,17 @@ public final class Constants {
     public static final int BACK_RIGHT_MOTOR_ID = 4;
 
     public static final int MOTOR_CURRENT_LIMIT = 35; // Amps
+    public static final double TRACK_WIDTH_METERS = 0;
+
+    public static final int LEFT_DRIVE_ENCODER_ID = 0;
+    public static final int RIGHT_DRIVE_ENCODER_ID = 0;
+
+    public static final int PIGEON_ID = 0;
+
+    public static final Matrix<N3, N1> STATE_STD_DEVS =
+        VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
+    public static final Matrix<N3, N1> VISION_STD_DEVS =
+        VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30));
   }
 
   public static class ArmConstants {
