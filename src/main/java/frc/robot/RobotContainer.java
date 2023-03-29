@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -39,6 +41,9 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    // Start Logger, and record driverstation control and joystick data
+    DataLogManager.start();
+    DriverStation.startDataLog(DataLogManager.getLog());
     // Configure the trigger bindings
     configureBindings();
     m_drivetrain.setDefaultCommand(
