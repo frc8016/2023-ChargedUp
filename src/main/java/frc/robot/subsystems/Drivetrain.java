@@ -29,7 +29,7 @@ public class Drivetrain extends SubsystemBase {
   private final DifferentialDrive m_differentialDrive =
       new DifferentialDrive(m_leftControllerGroup, m_rightControllerGroup);
 
-  private DataLog log = DataLogManager.getLog();
+  private DataLog m_log = DataLogManager.getLog();
   private DoubleLogEntry l_frontLeftMotorCurrent =
       new DoubleLogEntry(log, "/custom/drivetrain/frontleft/current");
   private DoubleLogEntry l_frontLeftMotorTemp =
