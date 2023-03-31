@@ -129,6 +129,10 @@ public class Drivetrain extends SubsystemBase {
     m_leftDriveEncoder.configAllSettings(encoderConfig);
     m_rightDriveEncoder.configAllSettings(encoderConfig);
 
+    // Invert left drivetrain encoder so that clockwise rotation results in positive sensor
+    // measurements
+    m_leftDriveEncoder.configSensorDirection(true);
+
     // Set encoder positions and gyro heading to 0
     m_leftDriveEncoder.setPosition(0.0);
     m_rightDriveEncoder.setPosition(0.0);

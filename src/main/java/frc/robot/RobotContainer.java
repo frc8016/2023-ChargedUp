@@ -17,7 +17,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
+import frc.robot.commands.Paths;
+import frc.robot.commands.Ramsete;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.EndEffector;
@@ -153,7 +154,6 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
     return m_autoChooser.getSelected();
-    // Autos.scoreHighTier(m_drivetrain, m_endEffector, m_arm);
   }
 
   public void disabledInit() {

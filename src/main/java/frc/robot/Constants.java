@@ -42,6 +42,10 @@ public final class Constants {
     public static final double kPDrive = 0;
     public static final double kIDrive = 0;
     public static final double kDDrive = 0;
+
+    // Max trajectory velocity and acceleration in meters/s and meters/s^2, respectively
+    public static final double MAX_VELOCITY = 1;
+    public static final double MAX_ACCELERATION = 1;
   }
 
   public static class EndEffectorConstants {
