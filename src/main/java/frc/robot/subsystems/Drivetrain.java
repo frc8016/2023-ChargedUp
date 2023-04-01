@@ -31,29 +31,21 @@ public class Drivetrain extends SubsystemBase {
 
   private DataLog m_log = DataLogManager.getLog();
   private DoubleLogEntry l_frontLeftMotorCurrent =
-      new DoubleLogEntry(log, "/custom/drivetrain/frontleft/current");
+      new DoubleLogEntry(m_log, "/custom/drivetrain/frontleft/current");
   private DoubleLogEntry l_frontLeftMotorTemp =
-      new DoubleLogEntry(log, "/custom/drivetrain/frontleft/temp");
+      new DoubleLogEntry(m_log, "/custom/drivetrain/frontleft/temp");
   private DoubleLogEntry l_backLeftMotorCurrent =
-      new DoubleLogEntry(log, "/custom/drivetrain/backleft/current");
+      new DoubleLogEntry(m_log, "/custom/drivetrain/backleft/current");
   private DoubleLogEntry l_backLeftMotorTemp =
-      new DoubleLogEntry(log, "/custom/drivetrain/backleft/temp");
-  // private DoubleLogEntry l_topLeftMotorCurrent = new DoubleLogEntry(log,
-  // "/custom/drivetrain/topleft/current");
-  // private DoubleLogEntry l_topLeftMotorTemp = new DoubleLogEntry(log,
-  // "/custom/drivetrain/topleft/temp");
+      new DoubleLogEntry(m_log, "/custom/drivetrain/backleft/temp");
   private DoubleLogEntry l_frontrightMotorCurrent =
-      new DoubleLogEntry(log, "/custom/drivetrain/frontright/current");
+      new DoubleLogEntry(m_log, "/custom/drivetrain/frontright/current");
   private DoubleLogEntry l_frontrightMotorTemp =
-      new DoubleLogEntry(log, "/custom/drivetrain/frontright/temp");
+      new DoubleLogEntry(m_log, "/custom/drivetrain/frontright/temp");
   private DoubleLogEntry l_backrightMotorCurrent =
-      new DoubleLogEntry(log, "/custom/drivetrain/backright/current");
+      new DoubleLogEntry(m_log, "/custom/drivetrain/backright/current");
   private DoubleLogEntry l_backrightMotorTemp =
-      new DoubleLogEntry(log, "/custom/drivetrain/backright/temp");
-  // private DoubleLogEntry l_toprightMotorCurrent = new DoubleLogEntry(log,
-  // "/custom/drivetrain/topright/current");
-  // private DoubleLogEntry l_toprightMotorTemp = new DoubleLogEntry(log,
-  // "/custom/drivetrain/topright/temp");
+      new DoubleLogEntry(m_log, "/custom/drivetrain/backright/temp");
 
   /** Creates a new Drivetrain. */
   public Drivetrain() {}
@@ -74,13 +66,9 @@ public class Drivetrain extends SubsystemBase {
     l_frontLeftMotorTemp.append(m_frontLeftMotor.getMotorTemperature());
     l_backLeftMotorCurrent.append(m_backLeftMotor.getOutputCurrent());
     l_backLeftMotorTemp.append(m_backLeftMotor.getMotorTemperature());
-    //   l_topLeftMotorCurrent.append(m_topLeftMotor.getOutputCurrent());
-    //   l_topLeftMotorTemp.append(m_topLeftMotor.getMotorTemperature());
     l_frontrightMotorCurrent.append(m_frontRightMotor.getOutputCurrent());
     l_frontrightMotorTemp.append(m_frontRightMotor.getMotorTemperature());
     l_backrightMotorCurrent.append(m_backRightMotor.getOutputCurrent());
     l_backrightMotorTemp.append(m_backRightMotor.getMotorTemperature());
-    //   l_toprightMotorCurrent.append(m_topRightMotor.getOutputCurrent());
-    //   l_toprightMotorTemp.append(m_topRightMotor.getMotorTemperature());
   }
 }
