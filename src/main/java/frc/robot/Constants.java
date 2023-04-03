@@ -41,6 +41,8 @@ public final class Constants {
   public static class EndEffectorConstants {
     public static final int INTAKE_ID = 7;
 
+    public static final int MOTOR_CURRENT_LIMIT = 15; // Amps
+
     public static final int SOLENOID_FORWARD_CHANNEL = 0;
     public static final int SOLENOID_REVERSE_CHANNEL = 1;
 
@@ -52,6 +54,8 @@ public final class Constants {
     public static final int BACK_LEFT_MOTOR_ID = 2;
     public static final int FRONT_RIGHT_MOTOR_ID = 3;
     public static final int BACK_RIGHT_MOTOR_ID = 4;
+
+    public static final int MOTOR_CURRENT_LIMIT = 35; // Amps
   }
 
   public static class ArmConstants {
@@ -61,6 +65,8 @@ public final class Constants {
 
     public static final int LEFT_SHOULDER_MOTOR_ID = 6;
     public static final int RIGHT_SHOULDER_MOTOR_ID = 5;
+
+    public static final int MOTOR_CURRENT_LIMIT = 20; // Amps
 
     public static final double ks = 0.20394;
     public static final double kg = 0.44787;

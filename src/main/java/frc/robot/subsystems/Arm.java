@@ -5,7 +5,9 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.REVLibError;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -73,6 +75,8 @@ public class Arm extends ProfiledPIDSubsystem {
                 ArmConstants.kMaxAccelerationRadPerSecondSquared)),
         -Math.PI / 2);
 
+    configureMotors();
+
     m_relativeEncoder.reset();
     m_relativeEncoder.setDistancePerPulse(ArmConstants.kRelativeEncoderRadiansPerPulse);
     m_absoluteEncoder.setDistancePerRotation(Math.PI * 2);
@@ -81,6 +85,34 @@ public class Arm extends ProfiledPIDSubsystem {
 
     SmartDashboard.putData("Arm Sim", m_mech2d);
     m_armTower.setColor(new Color8Bit(Color.kBlue));
+  }
+
+  private void configureMotors() {
+    // Reset all the motors to factory defaults (except CAN ID)
+    m_leftShoulderMotor.restoreFactoryDefaults();
+    m_rightShoulderMotor.restoreFactoryDefaults();
+
+    // Set all the motor's idle modes to Brake
+    if (m_leftShoulderMotor.setIdleMode(IdleMode.kBrake) != REVLibError.kOk) {
+      System.out.println("ERROR while setting Left Shoulder Motor to Brake Mode");
+    }
+    if (m_rightShoulderMotor.setIdleMode(IdleMode.kBrake) != REVLibError.kOk) {
+      System.out.println("ERROR while setting Right Shoulder Motor to Brake Mode");
+    }
+
+    // Set current limits for all motors
+    if (m_leftShoulderMotor.setSmartCurrentLimit(ArmConstants.MOTOR_CURRENT_LIMIT)
+        != REVLibError.kOk) {
+      System.out.println("ERROR while setting Left Shoulder Motor smart current limit");
+    }
+    if (m_rightShoulderMotor.setSmartCurrentLimit(ArmConstants.MOTOR_CURRENT_LIMIT)
+        != REVLibError.kOk) {
+      System.out.println("ERROR while setting Right Shoulder Motor smart current limit");
+    }
+
+    // Burn all changed settings to flash
+    m_leftShoulderMotor.burnFlash();
+    m_rightShoulderMotor.burnFlash();
   }
 
   // Runs with arm with non-predictive feedforward control
