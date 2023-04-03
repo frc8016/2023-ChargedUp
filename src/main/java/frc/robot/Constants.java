@@ -69,7 +69,7 @@ public final class Constants {
     public static final double TRACK_WIDTH_METERS = 0;
 
     public static final int LEFT_DRIVE_ENCODER_ID = 0;
-    public static final int RIGHT_DRIVE_ENCODER_ID = 0;
+    public static final int RIGHT_DRIVE_ENCODER_ID = 1;
 
     public static final int PIGEON_ID = 0;
 
@@ -78,9 +78,9 @@ public final class Constants {
     public static final Matrix<N3, N1> VISION_STD_DEVS =
         VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30));
 
-    public static final double kVLinear = 0;
+    public static final double kVLinear = 1.3972;
     public static final double kVAngular = 0;
-    public static final double kALinear = 0;
+    public static final double kALinear = 0.65738;
     public static final double kAAngular = 0;
 
     public static final double kp_left = 0;
