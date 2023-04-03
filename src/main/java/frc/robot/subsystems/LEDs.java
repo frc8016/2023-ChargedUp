@@ -23,16 +23,12 @@ public class LEDs extends SubsystemBase {
     m_led.setData(m_ledBuffer);
     m_led.start();
 
-    // for (var i = 0; i < m_ledBuffer.getLength(); i++) {
-    //   // Sets the specified LED to the RGB values for red
-    //   m_ledBuffer.setRGB(i, 0, 0, 225);
-    // }
-
+    // Place boot-up sequence here
     this.setFrontSolid(55, 186, 27); // 8016 Green
     this.setBackSolid(38, 73, 253); // 8016 Blue (numbers)
   }
 
-  /* This assumes that the LEDs are wired in this arrangement:
+  /* This file assumes that the LEDs are wired in this arrangement:
    *        |\      |-------------------|      /|
    *        | \     |                   |     / |
    *        |  \    |                   |    /  |
@@ -46,6 +42,11 @@ public class LEDs extends SubsystemBase {
    *
    * Thank you for admiring my beautiful art
    */
+
+  // Following methods abstract the single aLED chain to 4 physical zones (front left, back left,
+  // back right, back right), which take an input of a 2-dimensional integer array. Each row is an
+  // individual LED element, and the three columns are Red, Green and Blue, respectivly (from
+  // 0 - 255). The elements are numbered from bottom to top.
 
   private void setFrontLeftBuffer(int[][] buffer) {
     // buffer is a 21 x 3 array of the LEDs, with each row being a different element and the columns
@@ -92,6 +93,7 @@ public class LEDs extends SubsystemBase {
     m_led.setData(m_ledBuffer);
   }
 
+  // The following methods allow each zone to be set to a single solid color
   public void setFrontLeftSolid(int red, int green, int blue) {
     int[][] buffer = new int[21][3];
     for (var i = 0; i < LEDConstants.FRONT_LED_LENGTH; i++) {
