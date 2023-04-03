@@ -5,7 +5,9 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.REVLibError;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -25,7 +27,27 @@ public class EndEffector extends SubsystemBase {
 
   /** Creates a new EndEffector. */
   public EndEffector() {
+    configureMotors();
     m_solenoid.set(Value.kForward);
+  }
+
+  private void configureMotors() {
+    // Reset all the motors to factory defaults (except CAN ID)
+    m_intake.restoreFactoryDefaults();
+
+    // Set all the motor's idle modes to Brake
+    if (m_intake.setIdleMode(IdleMode.kBrake) != REVLibError.kOk) {
+      System.out.println("ERROR while setting Intake Motor to Brake Mode");
+    }
+
+    // Set current limits for all motors
+    if (m_intake.setSmartCurrentLimit(EndEffectorConstants.MOTOR_CURRENT_LIMIT)
+        != REVLibError.kOk) {
+      System.out.println("ERROR while setting Intake Motor smart current limit");
+    }
+
+    // Burn all changed settings to flash
+    m_intake.burnFlash();
   }
 
   public void runIntake(double speed) {
