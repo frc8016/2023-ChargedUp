@@ -1,7 +1,9 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.sensors.BasePigeonSimCollection;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderConfiguration;
+import com.ctre.phoenix.sensors.CANCoderSimCollection;
 import com.ctre.phoenix.sensors.SensorTimeBase;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import com.revrobotics.CANSparkMax;
@@ -30,8 +32,13 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConstants;
 
@@ -79,8 +86,6 @@ public class Drivetrain extends SubsystemBase {
   private final Transform3d m_cameraToRobot =
       new Transform3d(new Translation3d(0, 0, 0), new Rotation3d(0, 0, 0));
 
-  // System Characteristics
-
   // Create state-space model of drivetrain with states [left velocity, right velocity], inputs
   // [left voltage, right voltage], and outputs [left velocity, right velocity].
   private final LinearSystem<N2, N2, N2> m_drivetrainSystem =
@@ -92,9 +97,28 @@ public class Drivetrain extends SubsystemBase {
           DrivetrainConstants.I,
           DrivetrainConstants.GEARING);
 
-  // Model-based drivetrain feedforward discretization timestep is assumed to be 20ms
+  // Model-based drivetrain feedforward; discretization timestep is assumed to be 20ms
   private final LinearPlantInversionFeedforward m_feedforward =
       new LinearPlantInversionFeedforward<>(m_drivetrainSystem, .02);
+
+  // Simulation Classes
+  private final CANCoderSimCollection m_rightEncoderSim =
+      new CANCoderSimCollection(m_rightDriveEncoder);
+  private final CANCoderSimCollection m_leftEncoderSim =
+      new CANCoderSimCollection(m_leftDriveEncoder);
+
+  private final BasePigeonSimCollection m_pigeonSim = new BasePigeonSimCollection(m_pigeon, false);
+
+  private final DifferentialDrivetrainSim m_drivetrainSim =
+      new DifferentialDrivetrainSim(
+          m_drivetrainSystem,
+          DCMotor.getNEO(2),
+          DrivetrainConstants.GEARING,
+          DrivetrainConstants.BASE_RADIUS_METERS * 2,
+          DrivetrainConstants.WHEEL_RADIUS_METERS,
+          null);
+
+  private final Field2d m_fieldSim = new Field2d();
 
   // PID Controllers for left and right sides of drivetrain
   private final PIDController m_leftPID = new PIDController(DrivetrainConstants.kp_left, 0.0, 0.0);
@@ -123,6 +147,7 @@ public class Drivetrain extends SubsystemBase {
   /** Creates a new Drivetrain. */
   public Drivetrain() {
     resetOdometry();
+    SmartDashboard.putData("Field", m_fieldSim);
   }
 
   public void arcadeDrive(double speed, double rotation) {
@@ -134,7 +159,7 @@ public class Drivetrain extends SubsystemBase {
   public void resetOdometry() {
     // Configure encoder parameters
     CANCoderConfiguration encoderConfig = new CANCoderConfiguration();
-    encoderConfig.sensorCoefficient = 0.479 / 4096.0;
+    encoderConfig.sensorCoefficient = DrivetrainConstants.DRIVE_DISTANCE_PER_PULSE;
     encoderConfig.unitString = "Meters";
     encoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
 
@@ -180,7 +205,9 @@ public class Drivetrain extends SubsystemBase {
     Pose2d visionMeasurement2d = visionMeasurement3d.toPose2d();
 
     // Apply vision measurements to DifferentialDrivePoseEstimator class
-    m_drivePoseEstimator.addVisionMeasurement(visionMeasurement2d, botPose[6]);
+    if (RobotBase.isReal()) {
+      m_drivePoseEstimator.addVisionMeasurement(visionMeasurement2d, botPose[6]);
+    }
   }
 
   public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
@@ -209,9 +236,15 @@ public class Drivetrain extends SubsystemBase {
             + m_rightPID.calculate(
                 m_rightDriveEncoder.getVelocity(), wheelSpeeds.rightMetersPerSecond);
 
-    // Feed outputs into motor controllers
-    m_leftControllerGroup.set(leftWheelVoltage);
-    m_rightControllerGroup.set(rightWheelVoltage);
+    // Feed outputs into motor controllers; use MotorController.set() while in simulation 'cause
+    // revlib is broken...
+    if (RobotBase.isSimulation()) {
+      m_leftControllerGroup.set(leftWheelVoltage / RobotController.getInputVoltage());
+      m_rightControllerGroup.set(rightWheelVoltage / RobotController.getInputVoltage());
+    } else {
+      m_leftControllerGroup.set(leftWheelVoltage);
+      m_rightControllerGroup.set(rightWheelVoltage);
+    }
   }
 
   // Retrieve robot pose from DifferentialDrivePoseEstimator
@@ -224,6 +257,46 @@ public class Drivetrain extends SubsystemBase {
     // This method will be called once per scheduler run
     logDrivetrainMotors();
     updateOdometry();
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    // Update drivetrain motor voltage inputs
+    m_drivetrainSim.setInputs(
+        m_leftControllerGroup.get() * RobotController.getInputVoltage(),
+        m_rightControllerGroup.get() * RobotController.getInputVoltage());
+
+    // Move simulation forward by timestep of 20ms
+    m_drivetrainSim.update(0.02);
+
+    // Convert encoder pose in meters to native value of CANCoders (counts)
+    m_leftEncoderSim.setRawPosition(
+        (int)
+            (m_drivetrainSim.getLeftPositionMeters()
+                / DrivetrainConstants.DRIVE_DISTANCE_PER_PULSE));
+    m_rightEncoderSim.setRawPosition(
+        (int)
+            (m_drivetrainSim.getRightPositionMeters()
+                / DrivetrainConstants.DRIVE_DISTANCE_PER_PULSE));
+
+    // Compute counts/100ms from meters/s <TODO> verify this calculation! Bad things will occur if
+    // it's incorrect.
+    m_leftEncoderSim.setVelocity(
+        (int)
+            ((m_drivetrainSim.getLeftVelocityMetersPerSecond()
+                    / DrivetrainConstants.DRIVE_DISTANCE_PER_PULSE)
+                * .1));
+    m_rightEncoderSim.setVelocity(
+        (int)
+            ((m_drivetrainSim.getRightPositionMeters()
+                    / DrivetrainConstants.DRIVE_DISTANCE_PER_PULSE)
+                * .1));
+
+    // Set pigeon IMU heading in degrees
+    m_pigeonSim.setRawHeading(m_drivetrainSim.getHeading().getDegrees());
+
+    // Update robot position on simulated field
+    m_fieldSim.setRobotPose(m_drivePoseEstimator.getEstimatedPosition());
   }
 
   private void logDrivetrainMotors() {

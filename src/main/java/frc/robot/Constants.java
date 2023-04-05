@@ -94,6 +94,9 @@ public final class Constants {
     // <TODO> gearing value may be the reciprocal
     public static final double GEARING = 420 / 2200;
 
+    // Distance per pulse of drivetrain encoders in meters
+    public static final double DRIVE_DISTANCE_PER_PULSE = 0.479 / 4096.0;
+
     public static final double kVLinear = 1.3972;
     public static final double kVAngular = 0;
     public static final double kALinear = 0.65738;
