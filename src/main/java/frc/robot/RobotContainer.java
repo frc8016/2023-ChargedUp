@@ -53,6 +53,7 @@ public class RobotContainer {
     m_autoChooser.setDefaultOption(
         "Score high no mobility", Autos.scoreHighTier(m_drivetrain, m_endEffector, m_arm));
     m_autoChooser.addOption("Example Command (DO NOT USE)", Autos.exampleAuto(m_exampleSubsystem));
+    m_autoChooser.addOption("None", null);
     SmartDashboard.putData(m_autoChooser);
     // Configure the trigger bindings
     configureBindings();
