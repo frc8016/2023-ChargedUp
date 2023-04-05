@@ -78,6 +78,22 @@ public final class Constants {
     public static final Matrix<N3, N1> VISION_STD_DEVS =
         VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30));
 
+    // Robot mass in kilograms
+    public static final double MASS_KG = 0;
+
+    // Drivetrain wheel radius in meters
+    public static final double WHEEL_RADIUS_METERS = 0;
+
+    // Drivetrain base radius (half of trackwidth) in meters
+    public static final double BASE_RADIUS_METERS = 0;
+
+    // Drivetrain moment of inertia in kg * m^2
+    public static final double I = 0;
+
+    // Drivetrain gearing
+    // <TODO> gearing value may be the reciprocal
+    public static final double GEARING = 420 / 2200;
+
     public static final double kVLinear = 1.3972;
     public static final double kVAngular = 0;
     public static final double kALinear = 0.65738;

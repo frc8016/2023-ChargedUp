@@ -8,8 +8,9 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.REVLibError;
-import edu.wpi.first.math.controller.DifferentialDriveFeedforward;
-import edu.wpi.first.math.controller.DifferentialDriveWheelVoltages;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.LinearPlantInversionFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -20,6 +21,11 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.math.system.LinearSystem;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
@@ -49,25 +55,6 @@ public class Drivetrain extends SubsystemBase {
   private final DifferentialDrive m_differentialDrive =
       new DifferentialDrive(m_leftControllerGroup, m_rightControllerGroup);
 
-  // Data Logging
-  private DataLog m_log = DataLogManager.getLog();
-  private DoubleLogEntry l_frontLeftMotorCurrent =
-      new DoubleLogEntry(m_log, "/custom/drivetrain/frontleft/current");
-  private DoubleLogEntry l_frontLeftMotorTemp =
-      new DoubleLogEntry(m_log, "/custom/drivetrain/frontleft/temp");
-  private DoubleLogEntry l_backLeftMotorCurrent =
-      new DoubleLogEntry(m_log, "/custom/drivetrain/backleft/current");
-  private DoubleLogEntry l_backLeftMotorTemp =
-      new DoubleLogEntry(m_log, "/custom/drivetrain/backleft/temp");
-  private DoubleLogEntry l_frontrightMotorCurrent =
-      new DoubleLogEntry(m_log, "/custom/drivetrain/frontright/current");
-  private DoubleLogEntry l_frontrightMotorTemp =
-      new DoubleLogEntry(m_log, "/custom/drivetrain/frontright/temp");
-  private DoubleLogEntry l_backrightMotorCurrent =
-      new DoubleLogEntry(m_log, "/custom/drivetrain/backright/current");
-  private DoubleLogEntry l_backrightMotorTemp =
-      new DoubleLogEntry(m_log, "/custom/drivetrain/backright/temp");
-
   // Odometry
   private final CANCoder m_leftDriveEncoder =
       new CANCoder(DrivetrainConstants.LEFT_DRIVE_ENCODER_ID);
@@ -92,19 +79,46 @@ public class Drivetrain extends SubsystemBase {
   private final Transform3d m_cameraToRobot =
       new Transform3d(new Translation3d(0, 0, 0), new Rotation3d(0, 0, 0));
 
-  // Drivetrain feedforward
-  private final DifferentialDriveFeedforward m_feedforward =
-      new DifferentialDriveFeedforward(
-          DrivetrainConstants.kVLinear,
-          DrivetrainConstants.kALinear,
-          DrivetrainConstants.kVAngular,
-          DrivetrainConstants.kAAngular,
-          DrivetrainConstants.TRACK_WIDTH_METERS);
+  // System Characteristics
+
+  // Create state-space model of drivetrain with states [left velocity, right velocity], inputs
+  // [left voltage, right voltage], and outputs [left velocity, right velocity].
+  private final LinearSystem<N2, N2, N2> m_drivetrainSystem =
+      LinearSystemId.createDrivetrainVelocitySystem(
+          DCMotor.getNEO(2),
+          DrivetrainConstants.MASS_KG,
+          DrivetrainConstants.WHEEL_RADIUS_METERS,
+          DrivetrainConstants.BASE_RADIUS_METERS,
+          DrivetrainConstants.I,
+          DrivetrainConstants.GEARING);
+
+  // Model-based drivetrain feedforward discretization timestep is assumed to be 20ms
+  private final LinearPlantInversionFeedforward m_feedforward =
+      new LinearPlantInversionFeedforward<>(m_drivetrainSystem, .02);
 
   // PID Controllers for left and right sides of drivetrain
   private final PIDController m_leftPID = new PIDController(DrivetrainConstants.kp_left, 0.0, 0.0);
   private final PIDController m_rightPID =
       new PIDController(DrivetrainConstants.kp_right, 0.0, 0.0);
+
+  // Data Logging
+  private DataLog m_log = DataLogManager.getLog();
+  private DoubleLogEntry l_frontLeftMotorCurrent =
+      new DoubleLogEntry(m_log, "/custom/drivetrain/frontleft/current");
+  private DoubleLogEntry l_frontLeftMotorTemp =
+      new DoubleLogEntry(m_log, "/custom/drivetrain/frontleft/temp");
+  private DoubleLogEntry l_backLeftMotorCurrent =
+      new DoubleLogEntry(m_log, "/custom/drivetrain/backleft/current");
+  private DoubleLogEntry l_backLeftMotorTemp =
+      new DoubleLogEntry(m_log, "/custom/drivetrain/backleft/temp");
+  private DoubleLogEntry l_frontrightMotorCurrent =
+      new DoubleLogEntry(m_log, "/custom/drivetrain/frontright/current");
+  private DoubleLogEntry l_frontrightMotorTemp =
+      new DoubleLogEntry(m_log, "/custom/drivetrain/frontright/temp");
+  private DoubleLogEntry l_backrightMotorCurrent =
+      new DoubleLogEntry(m_log, "/custom/drivetrain/backright/current");
+  private DoubleLogEntry l_backrightMotorTemp =
+      new DoubleLogEntry(m_log, "/custom/drivetrain/backright/temp");
 
   /** Creates a new Drivetrain. */
   public Drivetrain() {
@@ -151,7 +165,7 @@ public class Drivetrain extends SubsystemBase {
         NetworkTableInstance.getDefault()
             .getTable("limelight")
             .getEntry("botpose")
-            .getDoubleArray(new double[6]);
+            .getDoubleArray(new double[7]);
 
     // Reconstruct robot position from double array
     Pose3d cameraInField =
@@ -173,22 +187,25 @@ public class Drivetrain extends SubsystemBase {
     // Compute left and right wheel speeds from ChassisSpeeds object
     DifferentialDriveWheelSpeeds wheelSpeeds = m_driveKinematics.toWheelSpeeds(chassisSpeeds);
 
-    // Compute left and right wheel voltages from WheelSpeeds object
-    DifferentialDriveWheelVoltages wheelVoltages =
-        m_feedforward.calculate(
-            m_leftDriveEncoder.getVelocity(),
-            wheelSpeeds.leftMetersPerSecond,
-            m_rightDriveEncoder.getVelocity(),
-            wheelSpeeds.rightMetersPerSecond,
-            0.02);
+    // Populate model-based feedforward reference vector with current wheel speeds
+    Matrix<N2, N1> r =
+        VecBuilder.fill(m_leftDriveEncoder.getVelocity(), m_rightDriveEncoder.getVelocity());
+
+    // Populate model-based feedforward future reference vector with wheel speeds from function
+    // parameter (most likely generated by Ramsete)
+    Matrix<N2, N1> nextR =
+        VecBuilder.fill(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
+
+    // Compute controller output given current and future reference vectors
+    Matrix<N2, N1> u = m_feedforward.calculate(r, nextR);
 
     // Compute left and right drivetrain outputs
     double leftWheelVoltage =
-        wheelVoltages.left
+        u.get(0, 0)
             + m_leftPID.calculate(
                 m_leftDriveEncoder.getVelocity(), wheelSpeeds.leftMetersPerSecond);
     double rightWheelVoltage =
-        wheelVoltages.right
+        u.get(0, 1)
             + m_rightPID.calculate(
                 m_rightDriveEncoder.getVelocity(), wheelSpeeds.rightMetersPerSecond);
 
