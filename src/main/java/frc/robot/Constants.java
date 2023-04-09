@@ -66,7 +66,6 @@ public final class Constants {
     public static final int BACK_RIGHT_MOTOR_ID = 4;
 
     public static final int MOTOR_CURRENT_LIMIT = 35; // Amps
-    public static final double TRACK_WIDTH_METERS = 0;
 
     public static final int LEFT_DRIVE_ENCODER_ID = 0;
     public static final int RIGHT_DRIVE_ENCODER_ID = 1;
@@ -79,20 +78,20 @@ public final class Constants {
         VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30));
 
     // Robot mass in kilograms
-    public static final double MASS_KG = 0;
+    public static final double MASS_KG = 40.8;
 
     // Drivetrain wheel radius in meters
-    public static final double WHEEL_RADIUS_METERS = 0;
+    public static final double WHEEL_RADIUS_METERS = .073;
 
     // Drivetrain base radius (half of trackwidth) in meters
-    public static final double BASE_RADIUS_METERS = 0;
+    public static final double BASE_RADIUS_METERS = 0.3;
 
     // Drivetrain moment of inertia in kg * m^2
-    public static final double I = 0;
+    public static final double I = .7;
 
     // Drivetrain gearing
     // <TODO> gearing value may be the reciprocal
-    public static final double GEARING = 420 / 2200;
+    public static final double GEARING = 2200 / 420;
 
     // Distance per pulse of drivetrain encoders in meters
     public static final double DRIVE_DISTANCE_PER_PULSE = 0.479 / 4096.0;

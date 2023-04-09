@@ -5,10 +5,11 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.RamseteController;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
 
@@ -18,6 +19,7 @@ public class Ramsete extends CommandBase {
   private final Drivetrain m_drivetrain;
   private final Timer m_timer = new Timer();
   private final RamseteController m_ramseteController = new RamseteController();
+  private final Field2d m_fieldSim = new Field2d();
   /** Creates a new Ramsete. */
   public Ramsete(Trajectory trajectory, Drivetrain drivetrain) {
     m_trajectory = trajectory;
@@ -27,7 +29,8 @@ public class Ramsete extends CommandBase {
     addRequirements(drivetrain);
 
     // This value must be tuned
-    m_ramseteController.setTolerance(new Pose2d());
+
+    SmartDashboard.putData("Ground pose", m_fieldSim);
   }
 
   // Called when the command is initially scheduled.
@@ -46,7 +49,7 @@ public class Ramsete extends CommandBase {
     // Compute ramsete output as ChassisSpeeds
     ChassisSpeeds speeds =
         m_ramseteController.calculate(m_drivetrain.getEstimatedPosition(), state);
-
+    m_fieldSim.setRobotPose(state.poseMeters);
     // Follow desired chassis speeds
     m_drivetrain.setChassisSpeeds(speeds);
   }

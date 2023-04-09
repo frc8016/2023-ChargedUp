@@ -41,6 +41,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.DiffDriveVelocitySystemConstraint;
 
 public class Drivetrain extends SubsystemBase {
 
@@ -71,7 +72,7 @@ public class Drivetrain extends SubsystemBase {
   private final WPI_PigeonIMU m_pigeon = new WPI_PigeonIMU(DrivetrainConstants.PIGEON_ID);
 
   private final DifferentialDriveKinematics m_driveKinematics =
-      new DifferentialDriveKinematics(DrivetrainConstants.TRACK_WIDTH_METERS);
+      new DifferentialDriveKinematics(DrivetrainConstants.BASE_RADIUS_METERS * 2);
 
   private final DifferentialDrivePoseEstimator m_drivePoseEstimator =
       new DifferentialDrivePoseEstimator(
@@ -99,7 +100,10 @@ public class Drivetrain extends SubsystemBase {
 
   // Model-based drivetrain feedforward; discretization timestep is assumed to be 20ms
   private final LinearPlantInversionFeedforward m_feedforward =
-      new LinearPlantInversionFeedforward<>(m_drivetrainSystem, .02);
+      new LinearPlantInversionFeedforward<>(m_drivetrainSystem, 0.02);
+
+  private final DiffDriveVelocitySystemConstraint m_constraint =
+      new DiffDriveVelocitySystemConstraint(m_drivetrainSystem, m_driveKinematics, 12.0);
 
   // Simulation Classes
   private final CANCoderSimCollection m_rightEncoderSim =
@@ -147,12 +151,12 @@ public class Drivetrain extends SubsystemBase {
   /** Creates a new Drivetrain. */
   public Drivetrain() {
     resetOdometry();
+    m_leftControllerGroup.setInverted(true);
     SmartDashboard.putData("Field", m_fieldSim);
   }
 
   public void arcadeDrive(double speed, double rotation) {
-    m_leftControllerGroup.setInverted(true);
-    m_differentialDrive.arcadeDrive(speed, rotation);
+    m_differentialDrive.arcadeDrive(-speed, -rotation);
   }
 
   // <TODO> Smart "homing" for odometry which syncs with vision measurements
@@ -170,7 +174,7 @@ public class Drivetrain extends SubsystemBase {
 
     // Invert left drivetrain encoder so that clockwise rotation results in positive sensor
     // measurements
-    m_leftDriveEncoder.configSensorDirection(true);
+    m_leftDriveEncoder.configSensorDirection(false);
 
     // Set encoder positions and gyro heading to 0
     m_leftDriveEncoder.setPosition(0.0);
@@ -205,9 +209,9 @@ public class Drivetrain extends SubsystemBase {
     Pose2d visionMeasurement2d = visionMeasurement3d.toPose2d();
 
     // Apply vision measurements to DifferentialDrivePoseEstimator class
-    if (RobotBase.isReal()) {
-      m_drivePoseEstimator.addVisionMeasurement(visionMeasurement2d, botPose[6]);
-    }
+    //    if (RobotBase.isReal()) {
+    //    m_drivePoseEstimator.addVisionMeasurement(visionMeasurement2d, botPose[6]);
+    // }
   }
 
   public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
@@ -227,14 +231,23 @@ public class Drivetrain extends SubsystemBase {
     Matrix<N2, N1> u = m_feedforward.calculate(r, nextR);
 
     // Compute left and right drivetrain outputs
-    double leftWheelVoltage =
-        u.get(0, 0)
-            + m_leftPID.calculate(
-                m_leftDriveEncoder.getVelocity(), wheelSpeeds.leftMetersPerSecond);
-    double rightWheelVoltage =
-        u.get(0, 1)
-            + m_rightPID.calculate(
-                m_rightDriveEncoder.getVelocity(), wheelSpeeds.rightMetersPerSecond);
+    double leftWheelVoltage = u.get(0, 0);
+
+    //            + m_leftPID.calculate(
+    //              m_leftDriveEncoder.getVelocity(), wheelSpeeds.leftMetersPerSecond);
+    double rightWheelVoltage = u.get(1, 0);
+    //         + m_rightPID.calculate(
+    //           m_rightDriveEncoder.getVelocity(), wheelSpeeds.rightMetersPerSecond);
+    System.out.println(
+        "Left Chassis Speed: "
+            + wheelSpeeds.leftMetersPerSecond
+            + " Left Voltage: "
+            + leftWheelVoltage);
+    System.out.println(
+        "Right Chassis Speed: "
+            + wheelSpeeds.rightMetersPerSecond
+            + " Right Voltage: "
+            + rightWheelVoltage);
 
     // Feed outputs into motor controllers; use MotorController.set() while in simulation 'cause
     // revlib is broken...

@@ -12,7 +12,7 @@ import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.trajectory.constraint.TrajectoryConstraint;
 import edu.wpi.first.math.trajectory.constraint.TrajectoryConstraint.MinMax;
 
-class DiffDriveVelocitySystemConstraint implements TrajectoryConstraint {
+public class DiffDriveVelocitySystemConstraint implements TrajectoryConstraint {
   private final LinearSystem<N2, N2, N2> m_system;
   private final DifferentialDriveKinematics m_kinematics;
   private final double m_maxVoltage;
