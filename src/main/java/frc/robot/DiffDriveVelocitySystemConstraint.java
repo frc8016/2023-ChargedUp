@@ -29,6 +29,7 @@ public class DiffDriveVelocitySystemConstraint implements TrajectoryConstraint {
     Matrix<N2, N1> maxX = m_system.getA().times(-1).solve(m_system.getB().times(u));
 
     m_maxVelocity = maxX.get(0, 0);
+    System.out.println(m_maxVelocity);
   }
 
   public double getMaxVelocityMetersPerSecond(
@@ -61,12 +62,12 @@ public class DiffDriveVelocitySystemConstraint implements TrajectoryConstraint {
     // dx/dt for minimum u
     u = VecBuilder.fill(-m_maxVoltage, -m_maxVoltage);
     xDot = m_system.getA().times(x).plus(m_system.getB().times(u));
-    double minChassisAcceleration = (xDot.get(0, 0) * xDot.get(1, 0)) / 2.0;
+    double minChassisAcceleration = (xDot.get(0, 0) + xDot.get(1, 0)) / 2.0;
 
     // dx/dt for maximum u
     u = VecBuilder.fill(m_maxVoltage, m_maxVoltage);
     xDot = m_system.getA().times(x).plus(m_system.getB().times(u));
-    double maxChassisAcceleration = (xDot.get(0, 0) * xDot.get(1, 0)) / 2.0;
+    double maxChassisAcceleration = (xDot.get(0, 0) + xDot.get(1, 0)) / 2.0;
 
     return new MinMax(minChassisAcceleration, maxChassisAcceleration);
   }
