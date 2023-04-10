@@ -26,7 +26,7 @@ public class DiffDriveVelocitySystemConstraint implements TrajectoryConstraint {
 
     Matrix<N2, N1> u = VecBuilder.fill(m_maxVoltage, m_maxVoltage);
 
-    Matrix<N2, N1> maxX = m_system.getA().solve(m_system.getB().times(u));
+    Matrix<N2, N1> maxX = m_system.getA().times(-1).solve(m_system.getB().times(u));
 
     m_maxVelocity = maxX.get(0, 0);
   }

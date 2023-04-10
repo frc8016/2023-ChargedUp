@@ -102,7 +102,7 @@ public class Drivetrain extends SubsystemBase {
   private final LinearPlantInversionFeedforward m_feedforward =
       new LinearPlantInversionFeedforward<>(m_drivetrainSystem, 0.02);
 
-  private final DiffDriveVelocitySystemConstraint m_constraint =
+  public final DiffDriveVelocitySystemConstraint constraint =
       new DiffDriveVelocitySystemConstraint(m_drivetrainSystem, m_driveKinematics, 12.0);
 
   // Simulation Classes
@@ -209,9 +209,9 @@ public class Drivetrain extends SubsystemBase {
     Pose2d visionMeasurement2d = visionMeasurement3d.toPose2d();
 
     // Apply vision measurements to DifferentialDrivePoseEstimator class
-    //    if (RobotBase.isReal()) {
-    //    m_drivePoseEstimator.addVisionMeasurement(visionMeasurement2d, botPose[6]);
-    // }
+    if (RobotBase.isReal()) {
+      m_drivePoseEstimator.addVisionMeasurement(visionMeasurement2d, botPose[6]);
+    }
   }
 
   public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
@@ -231,13 +231,14 @@ public class Drivetrain extends SubsystemBase {
     Matrix<N2, N1> u = m_feedforward.calculate(r, nextR);
 
     // Compute left and right drivetrain outputs
-    double leftWheelVoltage = u.get(0, 0);
-
-    //            + m_leftPID.calculate(
-    //              m_leftDriveEncoder.getVelocity(), wheelSpeeds.leftMetersPerSecond);
-    double rightWheelVoltage = u.get(1, 0);
-    //         + m_rightPID.calculate(
-    //           m_rightDriveEncoder.getVelocity(), wheelSpeeds.rightMetersPerSecond);
+    double leftWheelVoltage =
+        u.get(0, 0)
+            + m_leftPID.calculate(
+                m_leftDriveEncoder.getVelocity(), wheelSpeeds.leftMetersPerSecond);
+    double rightWheelVoltage =
+        u.get(1, 0)
+            + m_rightPID.calculate(
+                m_rightDriveEncoder.getVelocity(), wheelSpeeds.rightMetersPerSecond);
     System.out.println(
         "Left Chassis Speed: "
             + wheelSpeeds.leftMetersPerSecond
@@ -249,7 +250,7 @@ public class Drivetrain extends SubsystemBase {
             + " Right Voltage: "
             + rightWheelVoltage);
 
-    // Feed outputs into motor controllers; use MotorController.set() while in simulation 'cause
+    // Feed outputs into motor controllers; use MotorController.set() while in simulation since
     // revlib is broken...
     if (RobotBase.isSimulation()) {
       m_leftControllerGroup.set(leftWheelVoltage / RobotController.getInputVoltage());

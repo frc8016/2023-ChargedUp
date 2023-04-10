@@ -9,7 +9,6 @@ import frc.robot.Constants.AutonConstants;
 import java.util.List;
 
 public class Paths {
-
   // TrajectoryConfig for general use
   private static final TrajectoryConfig m_config =
       new TrajectoryConfig(AutonConstants.MAX_VELOCITY, AutonConstants.MAX_ACCELERATION);

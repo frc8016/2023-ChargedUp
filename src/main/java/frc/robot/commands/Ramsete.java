@@ -20,6 +20,7 @@ public class Ramsete extends CommandBase {
   private final Timer m_timer = new Timer();
   private final RamseteController m_ramseteController = new RamseteController();
   private final Field2d m_fieldSim = new Field2d();
+
   /** Creates a new Ramsete. */
   public Ramsete(Trajectory trajectory, Drivetrain drivetrain) {
     m_trajectory = trajectory;

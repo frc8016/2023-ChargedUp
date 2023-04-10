@@ -35,13 +35,6 @@ public final class Constants {
     public static final double LOWER_DELAY = 0;
 
     public static final double CUBE_HIGH_TIER_SPEED = -1;
-    public static final double TAXI_SPEED = .5;
-
-    public static final double TAXI_DISTANCE = 130;
-
-    public static final double kPDrive = 0;
-    public static final double kIDrive = 0;
-    public static final double kDDrive = 0;
 
     // Max trajectory velocity and acceleration in meters/s and meters/s^2, respectively
     public static final double MAX_VELOCITY = 1;
@@ -65,12 +58,11 @@ public final class Constants {
     public static final int FRONT_RIGHT_MOTOR_ID = 3;
     public static final int BACK_RIGHT_MOTOR_ID = 4;
 
-    public static final int MOTOR_CURRENT_LIMIT = 35; // Amps
-
+    public static final int PIGEON_ID = 0;
     public static final int LEFT_DRIVE_ENCODER_ID = 0;
     public static final int RIGHT_DRIVE_ENCODER_ID = 1;
 
-    public static final int PIGEON_ID = 0;
+    public static final int MOTOR_CURRENT_LIMIT = 35; // Amps
 
     public static final Matrix<N3, N1> STATE_STD_DEVS =
         VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
@@ -95,11 +87,6 @@ public final class Constants {
 
     // Distance per pulse of drivetrain encoders in meters
     public static final double DRIVE_DISTANCE_PER_PULSE = 0.479 / 4096.0;
-
-    public static final double kVLinear = 1.3972;
-    public static final double kVAngular = 0;
-    public static final double kALinear = 0.65738;
-    public static final double kAAngular = 0;
 
     public static final double kp_left = 0;
     public static final double kp_right = 0;
