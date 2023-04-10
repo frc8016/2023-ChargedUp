@@ -42,6 +42,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.DiffDriveVelocitySystemConstraint;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 
 public class Drivetrain extends SubsystemBase {
 
@@ -102,8 +104,7 @@ public class Drivetrain extends SubsystemBase {
   private final LinearPlantInversionFeedforward m_feedforward =
       new LinearPlantInversionFeedforward<>(m_drivetrainSystem, 0.02);
 
-  public final DiffDriveVelocitySystemConstraint constraint =
-      new DiffDriveVelocitySystemConstraint(m_drivetrainSystem, m_driveKinematics, 12.0);
+  public final DiffDriveVelocitySystemConstraint constraint = new DiffDriveVelocitySystemConstraint(m_drivetrainSystem, m_driveKinematics, 11.0);
 
   // Simulation Classes
   private final CANCoderSimCollection m_rightEncoderSim =
@@ -172,8 +173,7 @@ public class Drivetrain extends SubsystemBase {
     m_leftDriveEncoder.configAllSettings(encoderConfig);
     m_rightDriveEncoder.configAllSettings(encoderConfig);
 
-    // Invert left drivetrain encoder so that clockwise rotation results in positive sensor
-    // measurements
+    // <TODO> Left side must be inverted; encoder simulation must be updated to match  
     m_leftDriveEncoder.configSensorDirection(false);
 
     // Set encoder positions and gyro heading to 0
@@ -231,22 +231,22 @@ public class Drivetrain extends SubsystemBase {
     Matrix<N2, N1> u = m_feedforward.calculate(r, nextR);
 
     // Compute left and right drivetrain outputs
-    double leftWheelVoltage =
-        u.get(0, 0)
-            + m_leftPID.calculate(
-                m_leftDriveEncoder.getVelocity(), wheelSpeeds.leftMetersPerSecond);
-    double rightWheelVoltage =
-        u.get(1, 0)
-            + m_rightPID.calculate(
-                m_rightDriveEncoder.getVelocity(), wheelSpeeds.rightMetersPerSecond);
+    double leftWheelVoltage = u.get(0,0);
+      //  u.get(0, 0);
+       //     + m_leftPID.calculate(
+         //       m_leftDriveEncoder.getVelocity(), wheelSpeeds.leftMetersPerSecond);
+    double rightWheelVoltage = u.get(1,0);
+    //    u.get(1, 0);
+       //     + m_rightPID.calculate(
+         //       m_rightDriveEncoder.getVelocity(), wheelSpeeds.rightMetersPerSecond);
     System.out.println(
-        "Left Chassis Speed: "
-            + wheelSpeeds.leftMetersPerSecond
+        "Left Chassis Pose: "
+            + m_leftDriveEncoder.getVelocity()
             + " Left Voltage: "
             + leftWheelVoltage);
     System.out.println(
-        "Right Chassis Speed: "
-            + wheelSpeeds.rightMetersPerSecond
+        "Right Chassis Pose: "
+            + m_rightDriveEncoder.getVelocity()
             + " Right Voltage: "
             + rightWheelVoltage);
 
@@ -302,7 +302,7 @@ public class Drivetrain extends SubsystemBase {
                 * .1));
     m_rightEncoderSim.setVelocity(
         (int)
-            ((m_drivetrainSim.getRightPositionMeters()
+            ((m_drivetrainSim.getRightVelocityMetersPerSecond()
                     / DrivetrainConstants.DRIVE_DISTANCE_PER_PULSE)
                 * .1));
 
