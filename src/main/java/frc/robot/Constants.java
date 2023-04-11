@@ -73,13 +73,13 @@ public final class Constants {
     public static final double MASS_KG = 40.8;
 
     // Drivetrain wheel radius in meters
-    public static final double WHEEL_RADIUS_METERS = .073;
+    public static final double WHEEL_RADIUS_METERS = .076;
 
     // Drivetrain base radius (half of trackwidth) in meters
     public static final double BASE_RADIUS_METERS = 0.3;
 
     // Drivetrain moment of inertia in kg * m^2
-    public static final double I = .7;
+    public static final double I = 1.7;
 
     // Drivetrain gearing
     // <TODO> gearing value may be the reciprocal

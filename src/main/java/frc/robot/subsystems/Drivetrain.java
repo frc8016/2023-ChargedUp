@@ -42,8 +42,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.DiffDriveVelocitySystemConstraint;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 
 public class Drivetrain extends SubsystemBase {
 
@@ -73,7 +71,7 @@ public class Drivetrain extends SubsystemBase {
 
   private final WPI_PigeonIMU m_pigeon = new WPI_PigeonIMU(DrivetrainConstants.PIGEON_ID);
 
-  private final DifferentialDriveKinematics m_driveKinematics =
+  public final DifferentialDriveKinematics m_driveKinematics =
       new DifferentialDriveKinematics(DrivetrainConstants.BASE_RADIUS_METERS * 2);
 
   private final DifferentialDrivePoseEstimator m_drivePoseEstimator =
@@ -104,7 +102,8 @@ public class Drivetrain extends SubsystemBase {
   private final LinearPlantInversionFeedforward m_feedforward =
       new LinearPlantInversionFeedforward<>(m_drivetrainSystem, 0.02);
 
-  public final DiffDriveVelocitySystemConstraint constraint = new DiffDriveVelocitySystemConstraint(m_drivetrainSystem, m_driveKinematics, 11.0);
+  public final DiffDriveVelocitySystemConstraint constraint =
+      new DiffDriveVelocitySystemConstraint(m_drivetrainSystem, m_driveKinematics, 11.0);
 
   // Simulation Classes
   private final CANCoderSimCollection m_rightEncoderSim =
@@ -152,7 +151,11 @@ public class Drivetrain extends SubsystemBase {
   /** Creates a new Drivetrain. */
   public Drivetrain() {
     resetOdometry();
-    m_leftControllerGroup.setInverted(true);
+    if (RobotBase.isReal()) {
+      m_leftControllerGroup.setInverted(true);
+      m_leftDriveEncoder.configSensorDirection(true);
+    }
+
     SmartDashboard.putData("Field", m_fieldSim);
   }
 
@@ -168,13 +171,8 @@ public class Drivetrain extends SubsystemBase {
     encoderConfig.unitString = "Meters";
     encoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
 
-    // Flash encoder parameters
-    // <TODO> one encoder must be inverted
     m_leftDriveEncoder.configAllSettings(encoderConfig);
     m_rightDriveEncoder.configAllSettings(encoderConfig);
-
-    // <TODO> Left side must be inverted; encoder simulation must be updated to match  
-    m_leftDriveEncoder.configSensorDirection(false);
 
     // Set encoder positions and gyro heading to 0
     m_leftDriveEncoder.setPosition(0.0);
@@ -231,14 +229,14 @@ public class Drivetrain extends SubsystemBase {
     Matrix<N2, N1> u = m_feedforward.calculate(r, nextR);
 
     // Compute left and right drivetrain outputs
-    double leftWheelVoltage = u.get(0,0);
-      //  u.get(0, 0);
-       //     + m_leftPID.calculate(
-         //       m_leftDriveEncoder.getVelocity(), wheelSpeeds.leftMetersPerSecond);
-    double rightWheelVoltage = u.get(1,0);
+    double leftWheelVoltage = u.get(0, 0);
+    //  u.get(0, 0);
+    //     + m_leftPID.calculate(
+    //       m_leftDriveEncoder.getVelocity(), wheelSpeeds.leftMetersPerSecond);
+    double rightWheelVoltage = u.get(1, 0);
     //    u.get(1, 0);
-       //     + m_rightPID.calculate(
-         //       m_rightDriveEncoder.getVelocity(), wheelSpeeds.rightMetersPerSecond);
+    //     + m_rightPID.calculate(
+    //       m_rightDriveEncoder.getVelocity(), wheelSpeeds.rightMetersPerSecond);
     System.out.println(
         "Left Chassis Pose: "
             + m_leftDriveEncoder.getVelocity()

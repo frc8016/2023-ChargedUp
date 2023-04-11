@@ -5,13 +5,19 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
+import java.util.List;
 
 public class Ramsete extends CommandBase {
 
@@ -23,8 +29,19 @@ public class Ramsete extends CommandBase {
 
   /** Creates a new Ramsete. */
   public Ramsete(Trajectory trajectory, Drivetrain drivetrain) {
-    m_trajectory = trajectory;
     m_drivetrain = drivetrain;
+
+    TrajectoryConfig config =
+        new TrajectoryConfig(6, 3)
+            .setKinematics(m_drivetrain.m_driveKinematics)
+            .addConstraint(new CentripetalAccelerationConstraint(.5))
+            .addConstraint(m_drivetrain.constraint);
+    m_trajectory =
+        TrajectoryGenerator.generateTrajectory(
+            new Pose2d(),
+            List.of(new Translation2d(1, 2), new Translation2d(5, 4)),
+            new Pose2d(),
+            config);
 
     // Require Drivetrain subsystem
     addRequirements(drivetrain);
