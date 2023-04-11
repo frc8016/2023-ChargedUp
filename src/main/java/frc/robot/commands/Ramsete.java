@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -32,15 +33,15 @@ public class Ramsete extends CommandBase {
     m_drivetrain = drivetrain;
 
     TrajectoryConfig config =
-        new TrajectoryConfig(6, 3)
+        new TrajectoryConfig(1, .5)
             .setKinematics(m_drivetrain.m_driveKinematics)
             .addConstraint(new CentripetalAccelerationConstraint(.5))
             .addConstraint(m_drivetrain.constraint);
     m_trajectory =
         TrajectoryGenerator.generateTrajectory(
             new Pose2d(),
-            List.of(new Translation2d(1, 2), new Translation2d(5, 4)),
-            new Pose2d(),
+            List.of(new Translation2d(1, 0)),
+            new Pose2d(new Translation2d(2, 0), new Rotation2d()),
             config);
 
     // Require Drivetrain subsystem

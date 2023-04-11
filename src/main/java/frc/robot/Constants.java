@@ -76,7 +76,7 @@ public final class Constants {
     public static final double WHEEL_RADIUS_METERS = .076;
 
     // Drivetrain base radius (half of trackwidth) in meters
-    public static final double BASE_RADIUS_METERS = 0.3;
+    public static final double BASE_RADIUS_METERS = 0.32;
 
     // Drivetrain moment of inertia in kg * m^2
     public static final double I = 1.7;

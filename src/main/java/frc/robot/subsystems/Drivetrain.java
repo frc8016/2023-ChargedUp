@@ -103,7 +103,7 @@ public class Drivetrain extends SubsystemBase {
       new LinearPlantInversionFeedforward<>(m_drivetrainSystem, 0.02);
 
   public final DiffDriveVelocitySystemConstraint constraint =
-      new DiffDriveVelocitySystemConstraint(m_drivetrainSystem, m_driveKinematics, 11.0);
+      new DiffDriveVelocitySystemConstraint(m_drivetrainSystem, m_driveKinematics, 6.0);
 
   // Simulation Classes
   private final CANCoderSimCollection m_rightEncoderSim =
@@ -152,8 +152,7 @@ public class Drivetrain extends SubsystemBase {
   public Drivetrain() {
     resetOdometry();
     if (RobotBase.isReal()) {
-      m_leftControllerGroup.setInverted(true);
-      m_leftDriveEncoder.configSensorDirection(true);
+      m_rightControllerGroup.setInverted(true);
     }
 
     SmartDashboard.putData("Field", m_fieldSim);
@@ -166,13 +165,21 @@ public class Drivetrain extends SubsystemBase {
   // <TODO> Smart "homing" for odometry which syncs with vision measurements
   public void resetOdometry() {
     // Configure encoder parameters
-    CANCoderConfiguration encoderConfig = new CANCoderConfiguration();
-    encoderConfig.sensorCoefficient = DrivetrainConstants.DRIVE_DISTANCE_PER_PULSE;
-    encoderConfig.unitString = "Meters";
-    encoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
+    CANCoderConfiguration leftEncoderConfig = new CANCoderConfiguration();
+    leftEncoderConfig.sensorCoefficient = DrivetrainConstants.DRIVE_DISTANCE_PER_PULSE;
+    leftEncoderConfig.unitString = "Meters";
+    leftEncoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
 
-    m_leftDriveEncoder.configAllSettings(encoderConfig);
-    m_rightDriveEncoder.configAllSettings(encoderConfig);
+    CANCoderConfiguration rightEncoderConfig = new CANCoderConfiguration();
+    rightEncoderConfig.sensorCoefficient = DrivetrainConstants.DRIVE_DISTANCE_PER_PULSE;
+    rightEncoderConfig.unitString = "Meters";
+    rightEncoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
+
+    m_leftDriveEncoder.configFactoryDefault();
+    m_rightDriveEncoder.configFactoryDefault();
+
+    m_leftDriveEncoder.configAllSettings(leftEncoderConfig);
+    m_rightDriveEncoder.configAllSettings(rightEncoderConfig);
 
     // Set encoder positions and gyro heading to 0
     m_leftDriveEncoder.setPosition(0.0);
@@ -207,9 +214,9 @@ public class Drivetrain extends SubsystemBase {
     Pose2d visionMeasurement2d = visionMeasurement3d.toPose2d();
 
     // Apply vision measurements to DifferentialDrivePoseEstimator class
-    if (RobotBase.isReal()) {
-      m_drivePoseEstimator.addVisionMeasurement(visionMeasurement2d, botPose[6]);
-    }
+    //    if (RobotBase.isReal()) {
+    //    m_drivePoseEstimator.addVisionMeasurement(visionMeasurement2d, botPose[6]);
+    // }
   }
 
   public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
@@ -239,14 +246,15 @@ public class Drivetrain extends SubsystemBase {
     //       m_rightDriveEncoder.getVelocity(), wheelSpeeds.rightMetersPerSecond);
     System.out.println(
         "Left Chassis Pose: "
-            + m_leftDriveEncoder.getVelocity()
+            + m_leftDriveEncoder.getPosition()
             + " Left Voltage: "
             + leftWheelVoltage);
     System.out.println(
         "Right Chassis Pose: "
-            + m_rightDriveEncoder.getVelocity()
+            + m_rightDriveEncoder.getPosition()
             + " Right Voltage: "
             + rightWheelVoltage);
+    System.out.println("Pigeon fused heading: " + m_pigeon.getRotation2d());
 
     // Feed outputs into motor controllers; use MotorController.set() while in simulation since
     // revlib is broken...
@@ -254,8 +262,8 @@ public class Drivetrain extends SubsystemBase {
       m_leftControllerGroup.set(leftWheelVoltage / RobotController.getInputVoltage());
       m_rightControllerGroup.set(rightWheelVoltage / RobotController.getInputVoltage());
     } else {
-      m_leftControllerGroup.set(leftWheelVoltage);
-      m_rightControllerGroup.set(rightWheelVoltage);
+      m_leftControllerGroup.setVoltage(leftWheelVoltage);
+      m_rightControllerGroup.setVoltage(rightWheelVoltage);
     }
   }
 
@@ -269,6 +277,10 @@ public class Drivetrain extends SubsystemBase {
     // This method will be called once per scheduler run
     logDrivetrainMotors();
     updateOdometry();
+
+    //   System.out.println("Left Chassis Pose: " + m_leftDriveEncoder.getPosition());
+    // System.out.println("Right Chassis Pose: " + m_rightDriveEncoder.getPosition());
+    // System.out.println("Pigeon fused heading: " + m_pigeon.getRotation2d());
   }
 
   @Override
