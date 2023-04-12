@@ -70,13 +70,13 @@ public class Ramsete extends CommandBase {
         m_ramseteController.calculate(m_drivetrain.getEstimatedPosition(), state);
     m_fieldSim.setRobotPose(state.poseMeters);
     // Follow desired chassis speeds
-    m_drivetrain.setChassisSpeeds(speeds);
+    m_drivetrain.setChassisSpeeds(speeds, state, m_trajectory.sample(m_timer.get() - .02));
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_drivetrain.setChassisSpeeds(new ChassisSpeeds());
+    m_drivetrain.setChassisSpeeds(new ChassisSpeeds(), new Trajectory.State(), new Trajectory.State());
   }
 
   // Returns true when the command should end.
