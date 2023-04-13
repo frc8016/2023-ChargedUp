@@ -88,8 +88,8 @@ public final class Constants {
     // Distance per pulse of drivetrain encoders in meters
     public static final double DRIVE_DISTANCE_PER_PULSE = 0.479 / 4096.0;
 
-    public static final double kp_left = 0;
-    public static final double kp_right = 0;
+    public static final double kp_left = 5;
+    public static final double kp_right = 5;
   }
 
   public static class ArmConstants {

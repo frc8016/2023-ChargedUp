@@ -6,7 +6,6 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -33,16 +32,13 @@ public class Ramsete extends CommandBase {
     m_drivetrain = drivetrain;
 
     TrajectoryConfig config =
-        new TrajectoryConfig(1, .5)
+        new TrajectoryConfig(8, 1)
             .setKinematics(m_drivetrain.m_driveKinematics)
             .addConstraint(new CentripetalAccelerationConstraint(.5))
             .addConstraint(m_drivetrain.constraint);
     m_trajectory =
         TrajectoryGenerator.generateTrajectory(
-            new Pose2d(),
-            List.of(new Translation2d(1, 0)),
-            new Pose2d(new Translation2d(2, 0), new Rotation2d()),
-            config);
+            new Pose2d(), List.of(new Translation2d(5, 1)), new Pose2d(), config);
 
     // Require Drivetrain subsystem
     addRequirements(drivetrain);
@@ -76,7 +72,8 @@ public class Ramsete extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_drivetrain.setChassisSpeeds(new ChassisSpeeds(), new Trajectory.State(), new Trajectory.State());
+    m_drivetrain.setChassisSpeeds(
+        new ChassisSpeeds(), new Trajectory.State(), new Trajectory.State());
   }
 
   // Returns true when the command should end.
