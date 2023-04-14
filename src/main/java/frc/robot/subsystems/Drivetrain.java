@@ -72,12 +72,12 @@ public class Drivetrain extends SubsystemBase {
 
   private final WPI_PigeonIMU m_pigeon = new WPI_PigeonIMU(DrivetrainConstants.PIGEON_ID);
 
-  public final DifferentialDriveKinematics m_driveKinematics =
+  public final DifferentialDriveKinematics driveKinematics =
       new DifferentialDriveKinematics(DrivetrainConstants.BASE_RADIUS_METERS * 2);
 
   private final DifferentialDrivePoseEstimator m_drivePoseEstimator =
       new DifferentialDrivePoseEstimator(
-          m_driveKinematics,
+          driveKinematics,
           m_pigeon.getRotation2d(),
           m_leftDriveEncoder.getPosition(),
           m_rightDriveEncoder.getPosition(),
@@ -104,7 +104,7 @@ public class Drivetrain extends SubsystemBase {
       new LinearPlantInversionFeedforward<>(m_drivetrainSystem, 0.02);
 
   public final DiffDriveVelocitySystemConstraint constraint =
-      new DiffDriveVelocitySystemConstraint(m_drivetrainSystem, m_driveKinematics, 11);
+      new DiffDriveVelocitySystemConstraint(m_drivetrainSystem, driveKinematics, 11);
 
   // Simulation Classes
   private final CANCoderSimCollection m_rightEncoderSim =
@@ -151,12 +151,20 @@ public class Drivetrain extends SubsystemBase {
 
   /** Creates a new Drivetrain. */
   public Drivetrain() {
-    resetOdometry();
+    resetOdometry(new Pose2d());
     if (RobotBase.isReal()) {
       m_rightControllerGroup.setInverted(true);
     }
 
     SmartDashboard.putData("Field", m_fieldSim);
+    SmartDashboard.putNumber("Left Ramsete", 0.0);
+    SmartDashboard.putNumber("Right Ramsete", 0.0);
+
+    SmartDashboard.putNumber("Left Trajectory", 0.0);
+    SmartDashboard.putNumber("Right Trajectory", 0.0);
+
+    SmartDashboard.putNumber("Right Velocity", 0.0);
+    SmartDashboard.putNumber("Left Velocity", 0.0);
   }
 
   public void arcadeDrive(double speed, double rotation) {
@@ -164,12 +172,13 @@ public class Drivetrain extends SubsystemBase {
   }
 
   // <TODO> Smart "homing" for odometry which syncs with vision measurements
-  public void resetOdometry() {
+  public void resetOdometry(Pose2d pose) {
     // Configure encoder parameters
     CANCoderConfiguration leftEncoderConfig = new CANCoderConfiguration();
     leftEncoderConfig.sensorCoefficient = DrivetrainConstants.DRIVE_DISTANCE_PER_PULSE;
     leftEncoderConfig.unitString = "Meters";
     leftEncoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
+    leftEncoderConfig.sensorDirection = true;
 
     CANCoderConfiguration rightEncoderConfig = new CANCoderConfiguration();
     rightEncoderConfig.sensorCoefficient = DrivetrainConstants.DRIVE_DISTANCE_PER_PULSE;
@@ -186,6 +195,8 @@ public class Drivetrain extends SubsystemBase {
     m_leftDriveEncoder.setPosition(0.0);
     m_rightDriveEncoder.setPosition(0.0);
     m_pigeon.reset();
+
+    m_drivePoseEstimator.resetPosition(pose.getRotation(), 0.0, 0.0, pose);
   }
 
   public void updateOdometry() {
@@ -223,17 +234,17 @@ public class Drivetrain extends SubsystemBase {
   public void setChassisSpeeds(
       ChassisSpeeds chassisSpeeds, Trajectory.State currentState, Trajectory.State prevState) {
     // Compute left and right wheel speeds from ChassisSpeeds object
-    DifferentialDriveWheelSpeeds feedbackSpeeds = m_driveKinematics.toWheelSpeeds(chassisSpeeds);
+    DifferentialDriveWheelSpeeds feedbackSpeeds = driveKinematics.toWheelSpeeds(chassisSpeeds);
 
     DifferentialDriveWheelSpeeds currentFeedforwardSpeeds =
-        m_driveKinematics.toWheelSpeeds(
+        driveKinematics.toWheelSpeeds(
             new ChassisSpeeds(
                 currentState.velocityMetersPerSecond,
                 0,
                 currentState.velocityMetersPerSecond * currentState.curvatureRadPerMeter));
 
     DifferentialDriveWheelSpeeds prevFeedforwardSpeeds =
-        m_driveKinematics.toWheelSpeeds(
+        driveKinematics.toWheelSpeeds(
             new ChassisSpeeds(
                 prevState.velocityMetersPerSecond,
                 0,
@@ -281,6 +292,15 @@ public class Drivetrain extends SubsystemBase {
             + rightWheelVoltage);
     System.out.println("Pigeon fused heading: " + m_pigeon.getRotation2d());
 
+    SmartDashboard.putNumber("Left Ramsete", feedbackSpeeds.leftMetersPerSecond);
+    SmartDashboard.putNumber("Right Ramsete", feedbackSpeeds.rightMetersPerSecond);
+
+    SmartDashboard.putNumber("Left Trajectory", currentFeedforwardSpeeds.leftMetersPerSecond);
+    SmartDashboard.putNumber("Right Trajectory", currentFeedforwardSpeeds.rightMetersPerSecond);
+
+    SmartDashboard.putNumber("Right Velocity", m_rightDriveEncoder.getVelocity());
+    SmartDashboard.putNumber("Left Velocity", m_leftDriveEncoder.getVelocity());
+
     // Feed outputs into motor controllers; use MotorController.set() while in simulation since
     // revlib is broken...
     if (RobotBase.isSimulation()) {
@@ -302,10 +322,8 @@ public class Drivetrain extends SubsystemBase {
     // This method will be called once per scheduler run
     logDrivetrainMotors();
     updateOdometry();
-
-    //   System.out.println("Left Chassis Pose: " + m_leftDriveEncoder.getPosition());
-    // System.out.println("Right Chassis Pose: " + m_rightDriveEncoder.getPosition());
-    // System.out.println("Pigeon fused heading: " + m_pigeon.getRotation2d());
+    SmartDashboard.putNumber("Left Encoder Pose", m_leftDriveEncoder.getPosition());
+    SmartDashboard.putNumber("Right Encoder Pose", m_rightDriveEncoder.getPosition());
   }
 
   @Override

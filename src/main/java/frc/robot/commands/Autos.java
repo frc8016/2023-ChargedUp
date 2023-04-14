@@ -4,6 +4,12 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -13,6 +19,7 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.EndEffector;
 import frc.robot.subsystems.ExampleSubsystem;
+import java.util.List;
 
 public final class Autos {
   /** Example static factory for an autonomous command. */
@@ -21,7 +28,7 @@ public final class Autos {
   }
 
   // Score cube on high node
-  public static CommandBase scoreHighTier(Drivetrain drivetrain, EndEffector endEffector, Arm arm) {
+  public static CommandBase scoreHighTier(EndEffector endEffector, Arm arm) {
     return Commands.sequence(
         // Raise arm to scoring position
         Commands.runOnce(
@@ -45,6 +52,22 @@ public final class Autos {
               arm.enable();
             },
             arm));
+  }
+
+  public static CommandBase arbitraryTrajectory(Drivetrain drivetrain) {
+    TrajectoryConfig config =
+        new TrajectoryConfig(5, 2)
+            .setKinematics(drivetrain.driveKinematics)
+            //      .addConstraint(new CentripetalAccelerationConstraint(0))
+            .addConstraint(drivetrain.constraint);
+    Trajectory trajectory =
+        TrajectoryGenerator.generateTrajectory(
+            new Pose2d(),
+            List.of(new Translation2d(1, 0)),
+            new Pose2d(new Translation2d(2, 0), new Rotation2d()),
+            config);
+
+    return new Ramsete(trajectory, drivetrain);
   }
 
   private Autos() {
