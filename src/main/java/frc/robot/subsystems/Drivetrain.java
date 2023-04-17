@@ -126,9 +126,9 @@ public class Drivetrain extends SubsystemBase {
   private final Field2d m_fieldSim = new Field2d();
 
   // PID Controllers for left and right sides of drivetrain
-  private final PIDController m_leftPID = new PIDController(DrivetrainConstants.kp_left, 0.0, 0.0);
+  private final PIDController m_leftPID = new PIDController(DrivetrainConstants.kp_left, DrivetrainConstants.kd_left, 0.0);
   private final PIDController m_rightPID =
-      new PIDController(DrivetrainConstants.kp_right, 0.0, 0.0);
+      new PIDController(DrivetrainConstants.kp_right, DrivetrainConstants.kd_right, 0.0);
 
   // Data Logging
   private DataLog m_log = DataLogManager.getLog();
@@ -178,7 +178,10 @@ public class Drivetrain extends SubsystemBase {
     leftEncoderConfig.sensorCoefficient = DrivetrainConstants.DRIVE_DISTANCE_PER_PULSE;
     leftEncoderConfig.unitString = "Meters";
     leftEncoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
-    leftEncoderConfig.sensorDirection = true;
+
+    if (RobotBase.isReal()) {
+      leftEncoderConfig.sensorDirection = true;
+    }
 
     CANCoderConfiguration rightEncoderConfig = new CANCoderConfiguration();
     rightEncoderConfig.sensorCoefficient = DrivetrainConstants.DRIVE_DISTANCE_PER_PULSE;
@@ -324,6 +327,8 @@ public class Drivetrain extends SubsystemBase {
     updateOdometry();
     SmartDashboard.putNumber("Left Encoder Pose", m_leftDriveEncoder.getPosition());
     SmartDashboard.putNumber("Right Encoder Pose", m_rightDriveEncoder.getPosition());
+    m_fieldSim.setRobotPose(m_drivePoseEstimator.getEstimatedPosition());
+
   }
 
   @Override
@@ -363,8 +368,7 @@ public class Drivetrain extends SubsystemBase {
     m_pigeonSim.setRawHeading(m_drivetrainSim.getHeading().getDegrees());
 
     // Update robot position on simulated field
-    m_fieldSim.setRobotPose(m_drivePoseEstimator.getEstimatedPosition());
-  }
+    }
 
   private void logDrivetrainMotors() {
     l_frontLeftMotorCurrent.append(m_frontLeftMotor.getOutputCurrent());

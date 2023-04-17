@@ -20,7 +20,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.EndEffector;
 import frc.robot.subsystems.ExampleSubsystem;
 import java.util.List;
-
+import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstraint;
 public final class Autos {
   /** Example static factory for an autonomous command. */
   public static CommandBase exampleAuto(ExampleSubsystem subsystem) {
@@ -56,15 +56,16 @@ public final class Autos {
 
   public static CommandBase arbitraryTrajectory(Drivetrain drivetrain) {
     TrajectoryConfig config =
-        new TrajectoryConfig(5, 2)
+        new TrajectoryConfig(6, 1)
             .setKinematics(drivetrain.driveKinematics)
-            //      .addConstraint(new CentripetalAccelerationConstraint(0))
+            .addConstraint(new CentripetalAccelerationConstraint(.5))
             .addConstraint(drivetrain.constraint);
     Trajectory trajectory =
         TrajectoryGenerator.generateTrajectory(
             new Pose2d(),
-            List.of(new Translation2d(1, 0)),
-            new Pose2d(new Translation2d(2, 0), new Rotation2d()),
+            List.of(new Translation2d(4, 5), new Translation2d(2, 3)),
+     //       new Pose2d(new Translation2d(5, 0), new Rotation2d()),
+            new Pose2d(),
             config);
 
     return new Ramsete(trajectory, drivetrain);
