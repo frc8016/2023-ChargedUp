@@ -5,11 +5,11 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -20,7 +20,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.EndEffector;
 import frc.robot.subsystems.ExampleSubsystem;
 import java.util.List;
-import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstraint;
+
 public final class Autos {
   /** Example static factory for an autonomous command. */
   public static CommandBase exampleAuto(ExampleSubsystem subsystem) {
@@ -64,7 +64,7 @@ public final class Autos {
         TrajectoryGenerator.generateTrajectory(
             new Pose2d(),
             List.of(new Translation2d(4, 5), new Translation2d(2, 3)),
-     //       new Pose2d(new Translation2d(5, 0), new Rotation2d()),
+            //       new Pose2d(new Translation2d(5, 0), new Rotation2d()),
             new Pose2d(),
             config);
 

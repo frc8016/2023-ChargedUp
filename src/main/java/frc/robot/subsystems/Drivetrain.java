@@ -100,7 +100,7 @@ public class Drivetrain extends SubsystemBase {
           DrivetrainConstants.GEARING);
 
   // Model-based drivetrain feedforward; discretization timestep is assumed to be 20ms
-  private final LinearPlantInversionFeedforward m_feedforward =
+  public final LinearPlantInversionFeedforward feedforward =
       new LinearPlantInversionFeedforward<>(m_drivetrainSystem, 0.02);
 
   public final DiffDriveVelocitySystemConstraint constraint =
@@ -126,7 +126,8 @@ public class Drivetrain extends SubsystemBase {
   private final Field2d m_fieldSim = new Field2d();
 
   // PID Controllers for left and right sides of drivetrain
-  private final PIDController m_leftPID = new PIDController(DrivetrainConstants.kp_left, DrivetrainConstants.kd_left, 0.0);
+  private final PIDController m_leftPID =
+      new PIDController(DrivetrainConstants.kp_left, DrivetrainConstants.kd_left, 0.0);
   private final PIDController m_rightPID =
       new PIDController(DrivetrainConstants.kp_right, DrivetrainConstants.kd_right, 0.0);
 
@@ -169,6 +170,11 @@ public class Drivetrain extends SubsystemBase {
 
   public void arcadeDrive(double speed, double rotation) {
     m_differentialDrive.arcadeDrive(-speed, -rotation);
+  }
+
+  public void voltageDrive(double leftVoltage, double rightVoltage) {
+    m_leftControllerGroup.setVoltage(leftVoltage);
+    m_rightControllerGroup.setVoltage(rightVoltage);
   }
 
   // <TODO> Smart "homing" for odometry which syncs with vision measurements
@@ -266,7 +272,7 @@ public class Drivetrain extends SubsystemBase {
             currentFeedforwardSpeeds.rightMetersPerSecond);
 
     // Compute controller output given current and future reference vectors
-    Matrix<N2, N1> u = m_feedforward.calculate(r, nextR);
+    Matrix<N2, N1> u = feedforward.calculate(r, nextR);
 
     // Compute left and right drivetrain outputs
     double leftWheelVoltage =
@@ -328,7 +334,6 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Left Encoder Pose", m_leftDriveEncoder.getPosition());
     SmartDashboard.putNumber("Right Encoder Pose", m_rightDriveEncoder.getPosition());
     m_fieldSim.setRobotPose(m_drivePoseEstimator.getEstimatedPosition());
-
   }
 
   @Override
@@ -368,7 +373,7 @@ public class Drivetrain extends SubsystemBase {
     m_pigeonSim.setRawHeading(m_drivetrainSim.getHeading().getDegrees());
 
     // Update robot position on simulated field
-    }
+  }
 
   private void logDrivetrainMotors() {
     l_frontLeftMotorCurrent.append(m_frontLeftMotor.getOutputCurrent());
