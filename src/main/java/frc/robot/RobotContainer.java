@@ -7,6 +7,8 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -39,11 +41,20 @@ public class RobotContainer {
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final Joystick m_driverStick = new Joystick(OperatorConstants.JOYSTICK_PORT);
 
+  private final SendableChooser<Command> m_autoChooser = new SendableChooser<>();
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Start Logger, and record driverstation control and joystick data
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
+
+    // Configure sendable chooser
+    m_autoChooser.setDefaultOption(
+        "Score high no mobility", Autos.scoreHighTier(m_drivetrain, m_endEffector, m_arm));
+    m_autoChooser.addOption("Example Command (DO NOT USE)", Autos.exampleAuto(m_exampleSubsystem));
+    m_autoChooser.addOption("None", null);
+    SmartDashboard.putData(m_autoChooser);
     // Configure the trigger bindings
     configureBindings();
     m_drivetrain.setDefaultCommand(
@@ -139,6 +150,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Autos.scoreHighTier(m_drivetrain, m_endEffector, m_arm);
+    return m_autoChooser.getSelected();
+    // Autos.scoreHighTier(m_drivetrain, m_endEffector, m_arm);
   }
 }
