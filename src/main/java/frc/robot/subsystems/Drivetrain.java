@@ -166,6 +166,8 @@ public class Drivetrain extends SubsystemBase {
 
     SmartDashboard.putNumber("Right Velocity", 0.0);
     SmartDashboard.putNumber("Left Velocity", 0.0);
+    SmartDashboard.putNumber("Left Voltage", 0.0);
+    SmartDashboard.putNumber("Right Voltage", 0.0);
   }
 
   public void arcadeDrive(double speed, double rotation) {
@@ -294,6 +296,8 @@ public class Drivetrain extends SubsystemBase {
             + m_leftDriveEncoder.getPosition()
             + " Left Voltage: "
             + leftWheelVoltage);
+    SmartDashboard.putNumber("Left Voltage", leftWheelVoltage);
+    SmartDashboard.putNumber("Right Voltage", rightWheelVoltage);
     System.out.println(
         "Right Chassis Pose: "
             + m_rightDriveEncoder.getPosition()

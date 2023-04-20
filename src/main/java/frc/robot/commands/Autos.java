@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.AutonConstants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
@@ -39,7 +38,7 @@ public final class Autos {
         // Raise arm to scoring position
         Commands.runOnce(
             () -> {
-              arm.setGoal(ArmConstants.CUBE_LAUNCH_POSE);
+              arm.setGoal(Math.PI / 20);
               arm.enable();
             },
             endEffector),
@@ -54,7 +53,7 @@ public final class Autos {
         Commands.runOnce(() -> endEffector.runIntake(0), endEffector),
         Commands.runOnce(
             () -> {
-              arm.setGoal(-Math.PI / 2 + Math.PI / 24);
+              arm.setGoal(-Math.PI / 2 + Math.PI / 30);
               arm.enable();
             },
             arm));
