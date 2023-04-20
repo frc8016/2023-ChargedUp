@@ -55,9 +55,19 @@ public class RobotContainer {
 
     // Configure sendable chooser
     m_autoChooser.setDefaultOption(
-        "Score high no mobility", Autos.scoreHighTier(m_drivetrain, m_endEffector, m_arm));
-    m_autoChooser.addOption("Example Command (DO NOT USE)", Autos.exampleAuto(m_exampleSubsystem));
+        "Score high no mobility", Autos.scoreHighTier(m_endEffector, m_arm));
+    m_autoChooser.addOption("BLUE taxi", Autos.taxiNoCable(m_drivetrain, "BlueTaxiNoCable"));
+    m_autoChooser.addOption("RED taxi", Autos.taxiNoCable(m_drivetrain, "RedTaxiNoCable"));
+    m_autoChooser.addOption(
+        "BLUE score high taxi",
+        Autos.scoreHighTier(m_endEffector, m_arm)
+            .andThen(Autos.taxiNoCable(m_drivetrain, "BlueTaxiNoCable")));
+    m_autoChooser.addOption(
+        "RED score high taxi",
+        Autos.scoreHighTier(m_endEffector, m_arm)
+            .andThen(Autos.taxiNoCable(m_drivetrain, "RedTaxiNoCable")));
     m_autoChooser.addOption("None", null);
+    
     SmartDashboard.putData(m_autoChooser);
     // Configure the trigger bindings
     configureBindings();

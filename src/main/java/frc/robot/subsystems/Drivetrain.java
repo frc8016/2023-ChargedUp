@@ -205,7 +205,7 @@ public class Drivetrain extends SubsystemBase {
     m_rightDriveEncoder.setPosition(0.0);
     m_pigeon.reset();
 
-    m_drivePoseEstimator.resetPosition(pose.getRotation(), 0.0, 0.0, pose);
+    m_drivePoseEstimator.resetPosition(m_pigeon.getRotation2d(), 0.0, 0.0, pose);
   }
 
   public void updateOdometry() {
