@@ -4,6 +4,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -29,13 +35,10 @@ public final class Constants {
     public static final double LOWER_DELAY = 0;
 
     public static final double CUBE_HIGH_TIER_SPEED = -1;
-    public static final double TAXI_SPEED = .5;
 
-    public static final double TAXI_DISTANCE = 130;
-
-    public static final double kPDrive = 0;
-    public static final double kIDrive = 0;
-    public static final double kDDrive = 0;
+    // Max trajectory velocity and acceleration in meters/s and meters/s^2, respectively
+    public static final double MAX_VELOCITY = 1;
+    public static final double MAX_ACCELERATION = 1;
   }
 
   public static class EndEffectorConstants {
@@ -55,7 +58,40 @@ public final class Constants {
     public static final int FRONT_RIGHT_MOTOR_ID = 3;
     public static final int BACK_RIGHT_MOTOR_ID = 4;
 
+    public static final int PIGEON_ID = 0;
+    public static final int LEFT_DRIVE_ENCODER_ID = 0;
+    public static final int RIGHT_DRIVE_ENCODER_ID = 1;
+
     public static final int MOTOR_CURRENT_LIMIT = 35; // Amps
+
+    public static final Matrix<N3, N1> STATE_STD_DEVS =
+        VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
+    public static final Matrix<N3, N1> VISION_STD_DEVS =
+        VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30));
+
+    // Robot mass in kilograms
+    public static final double MASS_KG = 40.8;
+
+    // Drivetrain wheel radius in meters
+    public static final double WHEEL_RADIUS_METERS = .076;
+
+    // Drivetrain base radius (half of trackwidth) in meters
+    public static final double BASE_RADIUS_METERS = 0.32;
+
+    // Drivetrain moment of inertia in kg * m^2
+    public static final double I = 1.7;
+
+    // Drivetrain gearing
+    // <TODO> gearing value may be the reciprocal
+    public static final double GEARING = 2200 / 420;
+
+    // Distance per pulse of drivetrain encoders in meters
+    public static final double DRIVE_DISTANCE_PER_PULSE = 0.479 / 4096.0;
+
+    public static final double kp_left = 5;
+    public static final double kp_right = 5;
+    public static final double kd_left = 0.0;
+    public static final double kd_right = 0.0;
   }
 
   public static class ArmConstants {

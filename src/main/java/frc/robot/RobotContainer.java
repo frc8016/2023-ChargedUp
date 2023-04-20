@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
+import frc.robot.commands.Paths;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.EndEffector;
@@ -37,6 +38,7 @@ public class RobotContainer {
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final Arm m_arm = new Arm();
   private final LEDs m_LEDs = new LEDs();
+  private final Paths m_paths = new Paths();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -53,9 +55,24 @@ public class RobotContainer {
 
     // Configure sendable chooser
     m_autoChooser.setDefaultOption(
-        "Score high no mobility", Autos.scoreHighTier(m_drivetrain, m_endEffector, m_arm));
-    m_autoChooser.addOption("Example Command (DO NOT USE)", Autos.exampleAuto(m_exampleSubsystem));
+        "Score high no mobility", Autos.scoreHighTier(m_endEffector, m_arm));
+    m_autoChooser.addOption("BLUE taxi", Autos.taxiNoCable(m_drivetrain, "BlueTaxiNoCable"));
+    m_autoChooser.addOption("RED taxi", Autos.taxiNoCable(m_drivetrain, "RedTaxiNoCable"));
+    m_autoChooser.addOption(
+        "BLUE score high taxi",
+        Autos.scoreHighTier(m_endEffector, m_arm)
+            .andThen(Autos.taxiNoCable(m_drivetrain, "BlueTaxiNoCable")));
+    m_autoChooser.addOption(
+        "RED score high taxi",
+        Autos.scoreHighTier(m_endEffector, m_arm)
+            .andThen(Autos.taxiNoCable(m_drivetrain, "RedTaxiNoCable")));
+    m_autoChooser.addOption(
+        "BLUE far side score high",
+        Autos.scoreHighTier(m_endEffector, m_arm)
+            .andThen(Autos.taxiFarSide(m_drivetrain, "BlueTaxiFarSide")));
+    m_autoChooser.addOption("Over Charge Station", Autos.overChargeStation(m_drivetrain));
     m_autoChooser.addOption("None", null);
+
     SmartDashboard.putData(m_autoChooser);
     // Configure the trigger bindings
     configureBindings();
@@ -85,16 +102,6 @@ public class RobotContainer {
             Commands.runOnce(
                 () -> {
                   m_arm.setGoal(ArmConstants.ArmPosition.kIndex.value);
-                  m_arm.enable();
-                },
-                m_arm));
-
-    m_driverController
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  m_arm.setGoal(.12);
                   m_arm.enable();
                 },
                 m_arm));
@@ -153,20 +160,22 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
     return m_autoChooser.getSelected();
-    // Autos.scoreHighTier(m_drivetrain, m_endEffector, m_arm);
   }
 
   public void disabledInit() {
     m_LEDs.setAllCyan();
+    m_drivetrain.setIdleBrake();
   }
 
   public void disabledPeriodic() {}
 
   public void autonomousInit() {
     m_LEDs.setLEDToAllianceColor();
+    m_drivetrain.setIdleCoast();
   }
 
   public void teleopInit() {
     m_LEDs.setAllGreen();
+    m_drivetrain.setIdleCoast();
   }
 }
