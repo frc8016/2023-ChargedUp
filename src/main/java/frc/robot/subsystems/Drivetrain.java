@@ -170,6 +170,36 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Right Voltage", 0.0);
   }
 
+  public void setIdleBrake() {
+    if (m_frontLeftMotor.setIdleMode(IdleMode.kBrake) != REVLibError.kOk) {
+      System.out.println("ERROR while setting Front Left Motor to Brake Mode");
+    }
+    if (m_backLeftMotor.setIdleMode(IdleMode.kBrake) != REVLibError.kOk) {
+      System.out.println("ERROR while setting Back Left Motor to Brake Mode");
+    }
+    if (m_frontRightMotor.setIdleMode(IdleMode.kBrake) != REVLibError.kOk) {
+      System.out.println("ERROR while setting Front Right Motor to Brake Mode");
+    }
+    if (m_backRightMotor.setIdleMode(IdleMode.kBrake) != REVLibError.kOk) {
+      System.out.println("ERROR while setting Back Right Motor to Brake Mode");
+    }
+  }
+
+  public void setIdleCoast() {
+    if (m_frontLeftMotor.setIdleMode(IdleMode.kCoast) != REVLibError.kOk) {
+      System.out.println("ERROR while setting Front Left Motor to Coast Mode");
+    }
+    if (m_backLeftMotor.setIdleMode(IdleMode.kCoast) != REVLibError.kOk) {
+      System.out.println("ERROR while setting Back Left Motor to Coast Mode");
+    }
+    if (m_frontRightMotor.setIdleMode(IdleMode.kCoast) != REVLibError.kOk) {
+      System.out.println("ERROR while setting Front Right Motor to Coast Mode");
+    }
+    if (m_backRightMotor.setIdleMode(IdleMode.kCoast) != REVLibError.kOk) {
+      System.out.println("ERROR while setting Back Right Motor to Coast Mode");
+    }
+  }
+
   public void arcadeDrive(double speed, double rotation) {
     m_differentialDrive.arcadeDrive(-speed, -rotation);
   }

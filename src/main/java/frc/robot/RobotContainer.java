@@ -66,6 +66,10 @@ public class RobotContainer {
         "RED score high taxi",
         Autos.scoreHighTier(m_endEffector, m_arm)
             .andThen(Autos.taxiNoCable(m_drivetrain, "RedTaxiNoCable")));
+    m_autoChooser.addOption(
+        "BLUE far side score high",
+        Autos.scoreHighTier(m_endEffector, m_arm)
+            .andThen(Autos.taxiFarSide(m_drivetrain, "BlueTaxiFarSide")));
     m_autoChooser.addOption("Over Charge Station", Autos.overChargeStation(m_drivetrain));
     m_autoChooser.addOption("None", null);
 
@@ -160,15 +164,18 @@ public class RobotContainer {
 
   public void disabledInit() {
     m_LEDs.setAllCyan();
+    m_drivetrain.setIdleBrake();
   }
 
   public void disabledPeriodic() {}
 
   public void autonomousInit() {
     m_LEDs.setLEDToAllianceColor();
+    m_drivetrain.setIdleCoast();
   }
 
   public void teleopInit() {
     m_LEDs.setAllGreen();
+    m_drivetrain.setIdleCoast();
   }
 }

@@ -92,6 +92,21 @@ public final class Autos {
     return new Ramsete(trajectory, drivetrain);
   }
 
+  public static CommandBase taxiFarSide(Drivetrain drivetrain, String alliance) {
+    Trajectory trajectory = null;
+
+    try {
+      Path trajectoryPath =
+          Filesystem.getDeployDirectory()
+              .toPath()
+              .resolve("pathplanner/generatedJSON/" + alliance + ".wpilib.json");
+      trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+    } catch (IOException ex) {
+      DriverStation.reportError("Unable to open trajectory: ", ex.getStackTrace());
+    }
+    return new Ramsete(trajectory, drivetrain);
+  }
+
   public static CommandBase overChargeStation(Drivetrain drivetrain) {
     Trajectory trajectory = null;
 
