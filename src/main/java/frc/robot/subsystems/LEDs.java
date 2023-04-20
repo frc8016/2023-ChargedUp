@@ -6,6 +6,8 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LEDConstants;
 
@@ -13,8 +15,11 @@ public class LEDs extends SubsystemBase {
   private AddressableLED m_led = new AddressableLED(LEDConstants.LED_PORT);
 
   private AddressableLEDBuffer m_ledBuffer =
-      new AddressableLEDBuffer(
-          2 * LEDConstants.FRONT_LED_LENGTH + 2 * LEDConstants.BACK_LED_LENGTH);
+      new AddressableLEDBuffer(LEDConstants.TOTAL_LED_LENGTH);
+
+  private int m_LEDRed;
+  private int m_LEDGreen;
+  private int m_LEDBlue;
 
   /** Creates a new LEDs. */
   public LEDs() {
@@ -22,10 +27,6 @@ public class LEDs extends SubsystemBase {
 
     m_led.setData(m_ledBuffer);
     m_led.start();
-
-    // Place boot-up sequence here
-    this.setFrontSolid(55, 186, 27); // 8016 Green
-    this.setBackSolid(38, 73, 253); // 8016 Blue (numbers)
   }
 
   /* This file assumes that the LEDs are wired in this arrangement:
@@ -48,90 +49,40 @@ public class LEDs extends SubsystemBase {
   // individual LED element, and the three columns are Red, Green and Blue, respectivly (from
   // 0 - 255). The elements are numbered from bottom to top.
 
-  private void setFrontLeftBuffer(int[][] buffer) {
+  private void setFrontLeftSolid(int red, int green, int blue) {
     // buffer is a 21 x 3 array of the LEDs, with each row being a different element and the columns
     // being the R, G, and B values
     for (var i = 0; i < LEDConstants.FRONT_LED_LENGTH; i++) {
-      m_ledBuffer.setRGB(i, buffer[i][0], buffer[i][1], buffer[i][2]);
+      int offset = 0;
+      m_ledBuffer.setRGB(i + offset, red, green, blue);
     }
-    m_led.setData(m_ledBuffer);
   }
 
-  private void setBackLeftBuffer(int[][] buffer) {
+  private void setBackLeftSolid(int red, int green, int blue) {
     // buffer is a 9 x 3 array of the LEDs, with each row being a different element and the columns
     // being the R, G, and B values
     for (var i = 0; i < LEDConstants.BACK_LED_LENGTH; i++) {
-      m_ledBuffer.setRGB(
-          i + LEDConstants.FRONT_LED_LENGTH, buffer[i][0], buffer[i][1], buffer[i][2]);
+      int offset = LEDConstants.FRONT_LED_LENGTH;
+      m_ledBuffer.setRGB(i + offset, red, green, blue);
     }
-    m_led.setData(m_ledBuffer);
   }
 
-  private void setBackRightBuffer(int[][] buffer) {
+  private void setBackRightSolid(int red, int green, int blue) {
     // buffer is a 9 x 3 array of the LEDs, with each row being a different element and the columns
     // being the R, G, and B values
-    for (var i = 0; i < LEDConstants.BACK_LED_LENGTH; i++) {
-      m_ledBuffer.setRGB(
-          LEDConstants.FRONT_LED_LENGTH + 2 * LEDConstants.BACK_LED_LENGTH - 1 - i,
-          buffer[i][0],
-          buffer[i][1],
-          buffer[i][2]);
+    for (var i = LEDConstants.BACK_LED_LENGTH; i >= 0; i--) {
+      int offset = LEDConstants.BACK_LED_LENGTH + LEDConstants.FRONT_LED_LENGTH;
+      m_ledBuffer.setRGB(i + offset, red, green, blue);
     }
-    m_led.setData(m_ledBuffer);
   }
 
-  private void setFrontRightBuffer(int[][] buffer) {
+  private void setFrontRightSolid(int red, int green, int blue) {
     // buffer is a 21 x 3 array of the LEDs, with each row being a different element and the columns
     // being the R, G, and B values
-    for (var i = 0; i < LEDConstants.FRONT_LED_LENGTH; i++) {
-      m_ledBuffer.setRGB(
-          2 * LEDConstants.FRONT_LED_LENGTH + 2 * LEDConstants.BACK_LED_LENGTH - 1 - i,
-          buffer[i][0],
-          buffer[i][1],
-          buffer[i][2]);
+    for (var i = LEDConstants.FRONT_LED_LENGTH - 1; i >= 0; i--) {
+      int offset = LEDConstants.FRONT_LED_LENGTH + 2 * LEDConstants.BACK_LED_LENGTH;
+      m_ledBuffer.setRGB(i + offset, red, green, blue);
     }
-    m_led.setData(m_ledBuffer);
-  }
-
-  // The following methods allow each zone to be set to a single solid color
-  public void setFrontLeftSolid(int red, int green, int blue) {
-    int[][] buffer = new int[21][3];
-    for (var i = 0; i < LEDConstants.FRONT_LED_LENGTH; i++) {
-      buffer[i][0] = red;
-      buffer[i][1] = green;
-      buffer[i][2] = blue;
-    }
-    setFrontLeftBuffer(buffer);
-  }
-
-  public void setBackLeftSolid(int red, int green, int blue) {
-    int[][] buffer = new int[21][3];
-    for (var i = 0; i < LEDConstants.BACK_LED_LENGTH; i++) {
-      buffer[i][0] = red;
-      buffer[i][1] = green;
-      buffer[i][2] = blue;
-    }
-    setBackLeftBuffer(buffer);
-  }
-
-  public void setBackRightSolid(int red, int green, int blue) {
-    int[][] buffer = new int[21][3];
-    for (var i = 0; i < LEDConstants.BACK_LED_LENGTH; i++) {
-      buffer[i][0] = red;
-      buffer[i][1] = green;
-      buffer[i][2] = blue;
-    }
-    setBackRightBuffer(buffer);
-  }
-
-  public void setFrontRightSolid(int red, int green, int blue) {
-    int[][] buffer = new int[21][3];
-    for (var i = 0; i < LEDConstants.FRONT_LED_LENGTH; i++) {
-      buffer[i][0] = red;
-      buffer[i][1] = green;
-      buffer[i][2] = blue;
-    }
-    setFrontRightBuffer(buffer);
   }
 
   public void setAllSolid(int red, int green, int blue) {
@@ -151,8 +102,47 @@ public class LEDs extends SubsystemBase {
     setBackRightSolid(red, green, blue);
   }
 
+  public void setAllPurple() {
+    setAllSolid(
+        LEDConstants.CUBE_PURPLE[0], LEDConstants.CUBE_PURPLE[1], LEDConstants.CUBE_PURPLE[2]);
+  }
+
+  public void setAllYellow() {
+    setAllSolid(
+        LEDConstants.CONE_YELLOW[0], LEDConstants.CONE_YELLOW[1], LEDConstants.CONE_YELLOW[2]);
+  }
+
+  public void setAllBlue() {
+    setAllSolid(LEDConstants.TEAM_BLUE[0], LEDConstants.TEAM_BLUE[1], LEDConstants.TEAM_BLUE[2]);
+  }
+
+  public void setAllGreen() {
+    setAllSolid(LEDConstants.TEAM_GREEN[0], LEDConstants.TEAM_GREEN[1], LEDConstants.TEAM_GREEN[2]);
+  }
+
+  public void setAllCyan() {
+    setAllSolid(LEDConstants.TEAM_CYAN[0], LEDConstants.TEAM_CYAN[1], LEDConstants.TEAM_CYAN[2]);
+  }
+
+  public void setLEDToAllianceColor() {
+    if (DriverStation.getAlliance() != Alliance.Invalid) {
+      if (DriverStation.getAlliance() == Alliance.Red) {
+        setAllSolid(255, 0, 0);
+      } else {
+        setAllSolid(0, 0, 255);
+      }
+    } else {
+      setAllYellow();
+    }
+  }
+
+  public void updateLEDs() {
+    m_led.setData(m_ledBuffer);
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    updateLEDs();
   }
 }

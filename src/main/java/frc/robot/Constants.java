@@ -106,6 +106,12 @@ public final class Constants {
   public static class LEDConstants {
     public static final int FRONT_LED_LENGTH = 21;
     public static final int BACK_LED_LENGTH = 9;
+    public static final int TOTAL_LED_LENGTH = 2 * FRONT_LED_LENGTH + 2 * BACK_LED_LENGTH;
     public static final int LED_PORT = 0;
+    public static final int[] TEAM_GREEN = {127, 255, 0};
+    public static final int[] TEAM_BLUE = {0, 0, 255};
+    public static final int[] TEAM_CYAN = {47, 88, 255};
+    public static final int[] CONE_YELLOW = {255, 110, 0};
+    public static final int[] CUBE_PURPLE = {200, 0, 255};
   }
 }

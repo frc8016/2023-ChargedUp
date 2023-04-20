@@ -143,4 +143,18 @@ public class RobotContainer {
     // An example command will be run in autonomous
     return Autos.scoreHighTier(m_drivetrain, m_endEffector, m_arm);
   }
+
+  public void disabledInit() {
+    m_LEDs.setAllCyan();
+  }
+
+  public void disabledPeriodic() {}
+
+  public void autonomousInit() {
+    m_LEDs.setLEDToAllianceColor();
+  }
+
+  public void teleopInit() {
+    m_LEDs.setAllGreen();
+  }
 }
