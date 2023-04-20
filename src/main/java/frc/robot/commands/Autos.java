@@ -54,7 +54,7 @@ public final class Autos {
         Commands.runOnce(() -> endEffector.runIntake(0), endEffector),
         Commands.runOnce(
             () -> {
-              arm.setGoal(-Math.PI / 2 + Math.PI / 30);
+              arm.setGoal(-Math.PI / 2 + Math.PI / 24);
               arm.enable();
             },
             arm));
@@ -86,6 +86,21 @@ public final class Autos {
           Filesystem.getDeployDirectory()
               .toPath()
               .resolve("pathplanner/generatedJSON/" + alliance + ".wpilib.json");
+      trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+    } catch (IOException ex) {
+      DriverStation.reportError("Unable to open trajectory: ", ex.getStackTrace());
+    }
+    return new Ramsete(trajectory, drivetrain);
+  }
+
+  public static CommandBase overChargeStation(Drivetrain drivetrain) {
+    Trajectory trajectory = null;
+
+    try {
+      Path trajectoryPath =
+          Filesystem.getDeployDirectory()
+              .toPath()
+              .resolve("pathplanner/generatedJSON/OverChargeStation.wpilib.json");
       trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
     } catch (IOException ex) {
       DriverStation.reportError("Unable to open trajectory: ", ex.getStackTrace());

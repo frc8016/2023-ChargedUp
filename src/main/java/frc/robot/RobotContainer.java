@@ -66,8 +66,9 @@ public class RobotContainer {
         "RED score high taxi",
         Autos.scoreHighTier(m_endEffector, m_arm)
             .andThen(Autos.taxiNoCable(m_drivetrain, "RedTaxiNoCable")));
+    m_autoChooser.addOption("Over Charge Station", Autos.overChargeStation(m_drivetrain));
     m_autoChooser.addOption("None", null);
-    
+
     SmartDashboard.putData(m_autoChooser);
     // Configure the trigger bindings
     configureBindings();
